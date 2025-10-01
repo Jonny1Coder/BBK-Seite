@@ -70,3 +70,19 @@ body {
       font-family: "Consolas", "Fira Mono", monospace;
       letter-spacing: 1.5px;
     }
+    .home-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      padding: 10px 15px;
+      font-size: 1.1rem;
+      border-radius: 7px;
+      border: 1px solid #aaa;
+      background: #e8e8e8;
+      cursor: pointer;
+      transition: background 0.2s;
+      z-index: 1000;
+    }
+    .home-btn:hover {
+      background: #d0e7ff;
+    }
