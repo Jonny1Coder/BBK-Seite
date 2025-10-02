@@ -34,11 +34,10 @@ button {
     transition: background 0.2s;
 }
 a.countdown-btn {
-    margin: auto;
     width: 100%;
     padding: 15px 25px;
     font-size: 1.3rem;
-    border-radius: 7px;
+    border-radius: 2em;
     border: 1px solid #000;
     background: #fff;
     color: #000;
@@ -108,4 +107,7 @@ button:hover {
 }
 .home-btn:hover {
     background: #d0e7ff;
+}
+.text-bold {
+    font-weight: bold;
 }
