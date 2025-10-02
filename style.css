@@ -33,21 +33,6 @@ button {
     cursor: pointer;
     transition: background 0.2s;
 }
-a.countdown-btn {
-    width: 100%;
-    padding: 15px 25px;
-    font-size: 1.3rem;
-    border-radius: 2em;
-    border: 1px solid #000;
-    background: #fff;
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-a.countdown-btn:hover{
-    background: #9fffac;
-}
 button:hover {
     background: #d0e7ff;
 }
@@ -109,4 +94,50 @@ button:hover {
 }
 .text-bold {
     font-weight: bold;
+}
+.link-btn{
+    background-color: #76ff80;
+}
+
+
+@media (max-width: 1000px) {
+    body {
+        font-size: 2.5rem;
+        padding: 1em;
+    }
+    main {
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+        padding: 1em;
+        box-shadow: none;
+        border-radius: 0.5em;
+    }
+    h1 {
+        font-size: 1.5em;
+        margin-top: 20px;
+    }
+    h2 {
+        font-size: 1.1em;
+    }
+    .button-grid {
+        gap: 15px;
+    }
+    button, .button-grid button {
+        width: 100%;
+        min-height: 3.5em;
+        font-size: 1.2em;
+        box-sizing: border-box;
+    }
+    .countdown {
+        font-size: 2em;
+    }
+    .schoolend-title, .schoolend-countdown {
+        font-size: 1em;
+    }
+    .back-btn, .home-btn {
+        font-size: 1em;
+        padding: 10px 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
 }
