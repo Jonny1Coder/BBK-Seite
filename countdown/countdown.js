@@ -117,6 +117,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     let countdownInterval = null;
+    window.countdownInterval = countdownInterval;
 
     function parseTime(str) {
         const [h, m] = str.split(":").map(Number);
@@ -159,16 +160,17 @@ document.addEventListener("DOMContentLoaded", function() {
             `${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
     }
 
-    function resetView() {
-        document.getElementById('auswahl').style.display = "";
-        document.getElementById('countdown-view').style.display = "none";
-        if (countdownInterval) clearInterval(countdownInterval);
-        renderButtons(); // Buttons neu rendern, falls sich die aktuelle Stunde geändert hat
-    }
-
-// Initiales Rendern der Buttons mit Markierung
+    // Initiales Rendern der Buttons mit Markierung
     renderButtons();
 
-// Optional: Die Buttons alle paar Minuten neu rendern, damit die Markierung aktualisiert wird
+    // Optional: Die Buttons alle paar Minuten neu rendern, damit die Markierung aktualisiert wird
     setInterval(renderButtons, 60 * 1000); // jede Minute
 })
+
+// Funktion zum Zurücksetzen der Ansicht (global verfügbar)
+function resetView() {
+    document.getElementById('auswahl').style.display = "";
+    document.getElementById('countdown-view').style.display = "none";
+    if (window.countdownInterval) clearInterval(window.countdownInterval);
+    renderButtons(); // Buttons neu rendern, falls sich die aktuelle Stunde geändert hat
+}
