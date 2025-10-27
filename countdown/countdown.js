@@ -68,16 +68,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // Stundenzeiten: [Start, Ende]
 // Format: "HH:MM"
-    const stunden = [
-        ["07:55", "08:40"], // 1
-        ["08:40", "09:25"], // 2
-        ["09:40", "10:25"], // 3
-        ["10:25", "11:10"], // 4
-        ["11:25", "12:10"], // 5
-        ["12:10", "12:55"], // 6
-        ["13:10", "13:55"], // 7
-        ["13:55", "14:40"]  // 8
-    ];
+// const stunden = [ ... ] // entfernt, wird jetzt aus bbk.js verwendet
 
 // Hilfsfunktion: Wandelt "HH:MM" in Minuten seit Tagesbeginn um
     function timeToMinutes(str) {
