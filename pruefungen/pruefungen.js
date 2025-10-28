@@ -24,53 +24,58 @@ document.addEventListener('DOMContentLoaded', () => {
         container.style.background = '#fff';
         container.style.display = 'flex';
         container.style.justifyContent = 'space-between';
-        container.style.alignItems = 'flex-start';
+        // damit die linke und rechte Spalte gleich hoch sind
+        container.style.alignItems = 'stretch';
         container.style.gap = '12px';
 
         const left = document.createElement('div');
         left.style.flex = '1 1 60%';
+        // linke Spalte als Column: oberer Block (Titel + Haupttermin) und unterer Block (Nachschreibtermin)
+        left.style.display = 'flex';
+        left.style.flexDirection = 'column';
+        left.style.justifyContent = 'space-between';
 
         const title = document.createElement('div');
         title.textContent = `${exam.fach}`;
-        title.style.fontWeight = 'bold';
+        title.style.fontWeight = '700';
         title.style.fontSize = '1.2rem';
-        left.appendChild(title);
 
-        // Haupttermin Block
+        // Oberer Block: Titel + Haupttermin (so bleiben sie oben)
+        const topGroup = document.createElement('div');
+        topGroup.style.display = 'flex';
+        topGroup.style.flexDirection = 'column';
+        topGroup.appendChild(title);
+
+        // Haupttermin Block (größer)
         const mainBlock = document.createElement('div');
         mainBlock.style.marginTop = '8px';
         const mainLabel = document.createElement('div');
         mainLabel.textContent = `Termin: ${formatDateISO(exam.termin)}`;
-        mainLabel.style.fontSize = '0.95rem';
+        mainLabel.style.fontSize = '1.05rem';
+        mainLabel.style.fontWeight = '600';
+        mainLabel.style.color = '#222';
         mainBlock.appendChild(mainLabel);
 
-        const mainHint = document.createElement('div');
-        mainHint.textContent = 'Countdown zum Haupttermin:';
-        mainHint.style.fontSize = '0.85rem';
-        mainHint.style.color = '#333';
-        mainBlock.appendChild(mainHint);
+        topGroup.appendChild(mainBlock);
 
-        // Nachschreib Block
+        // Nachschreib Block (kleiner) - bleibt unten
         const nachBlock = document.createElement('div');
         nachBlock.style.marginTop = '8px';
         const nachLabel = document.createElement('div');
         nachLabel.textContent = `Nachschreibtermin: ${formatDateISO(exam.nachschreibtermin)}`;
         nachLabel.style.fontSize = '0.95rem';
+        nachLabel.style.color = '#555';
         nachBlock.appendChild(nachLabel);
 
-        const nachHint = document.createElement('div');
-        nachHint.textContent = 'Countdown zum Nachschreibtermin:';
-        nachHint.style.fontSize = '0.85rem';
-        nachHint.style.color = '#333';
-        nachBlock.appendChild(nachHint);
-
-        left.appendChild(mainBlock);
+        left.appendChild(topGroup);
         left.appendChild(nachBlock);
 
-        // Right: zwei Countdowns, jeweils rechtsbündig
+        // Right: zwei Countdowns, jeweils rechtsbündig und am unteren Rand der linken Blöcke ausgerichtet
         const right = document.createElement('div');
         right.style.display = 'flex';
         right.style.flexDirection = 'column';
+        // verteile die Countdowns so, dass einer oben, einer unten sitzt und damit auf Höhe der Labels
+        right.style.justifyContent = 'space-between';
         right.style.alignItems = 'flex-end';
         right.style.gap = '8px';
         right.style.minWidth = '220px';
@@ -78,7 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const mainCountdown = document.createElement('div');
         mainCountdown.className = 'exam-countdown';
         mainCountdown.style.fontFamily = 'Consolas, "Fira Mono", monospace';
-        mainCountdown.style.fontSize = '1.05rem';
+        mainCountdown.style.fontSize = '1.25rem';
+        mainCountdown.style.fontWeight = '700';
         mainCountdown.style.color = '#b08d00';
         mainCountdown.textContent = 'Lädt...';
         // Metadaten
@@ -88,8 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const nachCountdown = document.createElement('div');
         nachCountdown.className = 'exam-countdown';
         nachCountdown.style.fontFamily = 'Consolas, "Fira Mono", monospace';
-        nachCountdown.style.fontSize = '1.05rem';
-        nachCountdown.style.color = '#0056b3';
+        nachCountdown.style.fontSize = '0.95rem';
+        nachCountdown.style.fontWeight = '600';
+        nachCountdown.style.color = '#666';
         nachCountdown.textContent = 'Lädt...';
         nachCountdown.dataset.iso = exam.nachschreibtermin;
         nachCountdown.dataset.type = 'nach';
@@ -113,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         if (now >= target) {
             const type = elem.dataset.type === 'nach' ? 'Nachschreibtermin' : 'Prüfung';
-            elem.textContent = `${type} vorbei`; // z.B. "Prüfung vorbei" oder "Nachschreibtermin vorbei"
+            elem.textContent = `${type} vorbei`;
             return;
         }
         let diff = Math.floor((target - now) / 1000);
