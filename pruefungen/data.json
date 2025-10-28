@@ -1,0 +1,12 @@
+{
+  "exams": [
+    { "fach": "DB", "termin": "2026-05-18T09:00:00", "nachschreibtermin": "2026-06-15T09:00:00" },
+    { "fach": "SOW", "termin": "2026-05-21T09:00:00", "nachschreibtermin": "2026-06-17T09:00:00" },
+    { "fach": "Englisch", "termin": "2026-05-27T09:00:00", "nachschreibtermin": "2026-06-11T09:00:00" },
+    { "fach": "Deutsch", "termin": "2026-05-29T09:00:00", "nachschreibtermin": "2026-06-12T09:00:00" },
+    { "fach": "BEN", "termin": "2026-06-01T09:00:00", "nachschreibtermin": "2026-06-17T09:00:00" },
+    { "fach": "Mathe", "termin": "2026-06-03T09:00:00", "nachschreibtermin": "2026-06-16T09:00:00" },
+    { "fach": "Praktische Prüfung", "termin": "2026-06-10T09:00:00", "nachschreibtermin": "2026-06-17T09:00:00" }
+  ]
+}
+
