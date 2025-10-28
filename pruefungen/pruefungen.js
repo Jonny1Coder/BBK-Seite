@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return d.toLocaleString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
     }
 
-    function createExamCard(exam, idx) {
+    // Erzeugt eine Karte mit zwei Terminen (Haupttermin + Nachschreibtermin)
+    function createExamCard(exam) {
         const container = document.createElement('div');
         container.className = 'exam-card';
         container.style.padding = '12px 16px';
@@ -23,77 +24,96 @@ document.addEventListener('DOMContentLoaded', () => {
         container.style.background = '#fff';
         container.style.display = 'flex';
         container.style.justifyContent = 'space-between';
-        container.style.alignItems = 'center';
+        container.style.alignItems = 'flex-start';
+        container.style.gap = '12px';
 
         const left = document.createElement('div');
+        left.style.flex = '1 1 60%';
+
         const title = document.createElement('div');
         title.textContent = `${exam.fach}`;
         title.style.fontWeight = 'bold';
         title.style.fontSize = '1.2rem';
         left.appendChild(title);
 
-        const dateSmall = document.createElement('div');
-        dateSmall.textContent = `Termin: ${formatDateISO(exam.termin)}`;
-        dateSmall.style.fontSize = '0.95rem';
-        left.appendChild(dateSmall);
+        // Haupttermin Block
+        const mainBlock = document.createElement('div');
+        mainBlock.style.marginTop = '8px';
+        const mainLabel = document.createElement('div');
+        mainLabel.textContent = `Termin: ${formatDateISO(exam.termin)}`;
+        mainLabel.style.fontSize = '0.95rem';
+        mainBlock.appendChild(mainLabel);
 
-        const nach = document.createElement('div');
-        nach.textContent = `Nachschreibtermin: ${formatDateISO(exam.nachschreibtermin)}`;
-        nach.style.fontSize = '0.85rem';
-        nach.style.color = '#555';
-        left.appendChild(nach);
+        const mainHint = document.createElement('div');
+        mainHint.textContent = 'Countdown zum Haupttermin:';
+        mainHint.style.fontSize = '0.85rem';
+        mainHint.style.color = '#333';
+        mainBlock.appendChild(mainHint);
 
+        // Nachschreib Block
+        const nachBlock = document.createElement('div');
+        nachBlock.style.marginTop = '8px';
+        const nachLabel = document.createElement('div');
+        nachLabel.textContent = `Nachschreibtermin: ${formatDateISO(exam.nachschreibtermin)}`;
+        nachLabel.style.fontSize = '0.95rem';
+        nachBlock.appendChild(nachLabel);
+
+        const nachHint = document.createElement('div');
+        nachHint.textContent = 'Countdown zum Nachschreibtermin:';
+        nachHint.style.fontSize = '0.85rem';
+        nachHint.style.color = '#333';
+        nachBlock.appendChild(nachHint);
+
+        left.appendChild(mainBlock);
+        left.appendChild(nachBlock);
+
+        // Right: zwei Countdowns, jeweils rechtsbündig
         const right = document.createElement('div');
         right.style.display = 'flex';
         right.style.flexDirection = 'column';
         right.style.alignItems = 'flex-end';
+        right.style.gap = '8px';
+        right.style.minWidth = '220px';
 
-        const countdown = document.createElement('div');
-        countdown.className = 'exam-countdown';
-        countdown.style.fontFamily = 'Consolas, "Fira Mono", monospace';
-        countdown.style.fontSize = '1.1rem';
-        countdown.style.color = '#b08d00';
-        countdown.textContent = 'Lädt...';
+        const mainCountdown = document.createElement('div');
+        mainCountdown.className = 'exam-countdown';
+        mainCountdown.style.fontFamily = 'Consolas, "Fira Mono", monospace';
+        mainCountdown.style.fontSize = '1.05rem';
+        mainCountdown.style.color = '#b08d00';
+        mainCountdown.textContent = 'Lädt...';
+        // Metadaten
+        mainCountdown.dataset.iso = exam.termin;
+        mainCountdown.dataset.type = 'termin';
 
-        const switchBtn = document.createElement('button');
-        switchBtn.textContent = 'Zum Nachschreibtermin';
-        switchBtn.style.marginTop = '8px';
-        switchBtn.onclick = () => {
-            // Toggle between main termin and nachschreibtermin
-            const current = countdown.getAttribute('data-target');
-            if (current === 'termin') {
-                countdown.setAttribute('data-target', 'nach');
-                switchBtn.textContent = 'Zum Haupttermin';
-            } else {
-                countdown.setAttribute('data-target', 'termin');
-                switchBtn.textContent = 'Zum Nachschreibtermin';
-            }
-            // sofort aktualisieren
-            updateCountdownForElement(countdown, exam);
-        };
+        const nachCountdown = document.createElement('div');
+        nachCountdown.className = 'exam-countdown';
+        nachCountdown.style.fontFamily = 'Consolas, "Fira Mono", monospace';
+        nachCountdown.style.fontSize = '1.05rem';
+        nachCountdown.style.color = '#0056b3';
+        nachCountdown.textContent = 'Lädt...';
+        nachCountdown.dataset.iso = exam.nachschreibtermin;
+        nachCountdown.dataset.type = 'nach';
 
-        right.appendChild(countdown);
-        right.appendChild(switchBtn);
+        right.appendChild(mainCountdown);
+        right.appendChild(nachCountdown);
 
         container.appendChild(left);
         container.appendChild(right);
 
-        // set initial target attribute
-        countdown.setAttribute('data-target', 'termin');
-
-        // store exam data on element for easy access
-        countdown._exam = exam;
-
-        return {container, countdown};
+        return {container, mainCountdown, nachCountdown};
     }
 
-    function updateCountdownForElement(elem, exam) {
-        const targetKey = elem.getAttribute('data-target') || 'termin';
-        const iso = targetKey === 'termin' ? exam.termin : exam.nachschreibtermin;
+    function updateCountdownElement(elem) {
+        const iso = elem.dataset.iso;
+        if (!iso) {
+            elem.textContent = '-';
+            return;
+        }
         const target = new Date(iso);
         const now = new Date();
         if (now >= target) {
-            elem.textContent = targetKey === 'termin' ? 'Prüfung läuft oder vorbei 🎓' : 'Nachschreibtermin vorbei';
+            const type = elem.dataset.type === 'nach' ? 'Nachschreibtermin' : 'Prüfung';
+            elem.textContent = `${type} vorbei`; // z.B. "Prüfung vorbei" oder "Nachschreibtermin vorbei"
             return;
         }
         let diff = Math.floor((target - now) / 1000);
@@ -108,15 +128,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadData().then(data => {
         const exams = data.exams || [];
-        const elems = [];
-        exams.forEach((exam, idx) => {
-            const {container, countdown} = createExamCard(exam, idx);
+        const countdownElems = [];
+        exams.forEach((exam) => {
+            const {container, mainCountdown, nachCountdown} = createExamCard(exam);
             list.appendChild(container);
-            elems.push({countdown, exam});
+            countdownElems.push(mainCountdown, nachCountdown);
         });
 
         function tick() {
-            elems.forEach(({countdown, exam}) => updateCountdownForElement(countdown, exam));
+            countdownElems.forEach(elem => updateCountdownElement(elem));
         }
 
         tick();
@@ -126,4 +146,3 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error(err);
     });
 });
-
