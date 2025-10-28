@@ -118,11 +118,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const target = new Date(iso);
         const now = new Date();
+        // Wenn Ziel in der Vergangenheit liegt: zeige die Zeit seit dem Ereignis (laufend)
         if (now >= target) {
-            const type = elem.dataset.type === 'nach' ? 'Nachschreibtermin' : 'Prüfung';
-            elem.textContent = `${type} vorbei`;
+            let diff = Math.floor((now - target) / 1000); // vergangene Sekunden
+            const days = Math.floor(diff / (3600 * 24));
+            diff %= 3600 * 24;
+            const hours = Math.floor(diff / 3600);
+            diff %= 3600;
+            const minutes = Math.floor(diff / 60);
+            const seconds = diff % 60;
+            // Nutzerwunsch: statt "seit" soll "vor" angezeigt werden
+            elem.textContent = `vor ${days}d ${String(hours).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m ${String(seconds).padStart(2,'0')}s`;
             return;
         }
+        // Sonst: Countdown bis zum Ereignis
         let diff = Math.floor((target - now) / 1000);
         const days = Math.floor(diff / (3600 * 24));
         diff %= 3600 * 24;
@@ -136,8 +145,37 @@ document.addEventListener('DOMContentLoaded', () => {
     loadData().then(data => {
         const exams = data.exams || [];
         const countdownElems = [];
-        exams.forEach((exam) => {
+
+        const now = new Date();
+        // Annahme: Eine Prüfung gilt als vollständig vorbei, wenn sowohl Haupttermin als auch Nachschreibtermin in der Vergangenheit liegen
+        const upcoming = [];
+        const fullyExpired = [];
+        exams.forEach(exam => {
+            const main = new Date(exam.termin);
+            const nach = new Date(exam.nachschreibtermin);
+            if (main <= now && nach <= now) {
+                fullyExpired.push(exam);
+            } else {
+                upcoming.push(exam);
+            }
+        });
+
+        // Zuerst kommende Prüfungen rendern
+        upcoming.forEach((exam) => {
             const {container, mainCountdown, nachCountdown} = createExamCard(exam);
+            list.appendChild(container);
+            countdownElems.push(mainCountdown, nachCountdown);
+        });
+
+        // Danach vollständig vergangene Prüfungen rendern (ausgegraut, nach unten)
+        fullyExpired.forEach((exam) => {
+            const {container, mainCountdown, nachCountdown} = createExamCard(exam);
+            // optische Hervorhebung: ausgegraut
+            container.style.opacity = '0.65';
+            container.style.filter = 'grayscale(40%)';
+            container.style.background = '#f5f5f5';
+            container.dataset.fullyExpired = 'true';
+
             list.appendChild(container);
             countdownElems.push(mainCountdown, nachCountdown);
         });
