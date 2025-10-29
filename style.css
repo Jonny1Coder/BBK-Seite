@@ -126,6 +126,18 @@ button:hover {
     display: flex;
     flex-direction: column;
 }
+.exam-title {
+    /* Fachüberschrift: fett (global) */
+    font-weight: 800;
+}
+#exams-list{
+    flex-direction:column;
+    gap:16px;
+    width:100%;
+    max-width:900px;
+    padding:1em;
+    box-sizing:border-box;
+}
 .exam-main-label {
     margin-top: 8px;
     font-size: 1.05rem;
