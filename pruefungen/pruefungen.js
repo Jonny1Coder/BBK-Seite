@@ -18,94 +18,49 @@ document.addEventListener('DOMContentLoaded', () => {
     function createExamCard(exam) {
         const container = document.createElement('div');
         container.className = 'exam-card';
-        container.style.padding = '12px 16px';
-        container.style.border = '1px solid #ccc';
-        container.style.borderRadius = '12px';
-        container.style.background = '#fff';
-        container.style.display = 'flex';
-        container.style.justifyContent = 'space-between';
-        // damit die linke und rechte Spalte gleich hoch sind
-        container.style.alignItems = 'stretch';
-        container.style.gap = '12px';
 
-        const left = document.createElement('div');
-        left.style.flex = '1 1 60%';
-        // linke Spalte als Column: oberer Block (Titel + Haupttermin) und unterer Block (Nachschreibtermin)
-        left.style.display = 'flex';
-        left.style.flexDirection = 'column';
-        left.style.justifyContent = 'space-between';
-
+        // Titel
         const title = document.createElement('div');
         title.textContent = `${exam.fach}`;
-        title.style.fontWeight = '700';
-        title.style.fontSize = '1.2rem';
+        title.className = 'exam-title';
 
-        // Oberer Block: Titel + Haupttermin (so bleiben sie oben)
-        const topGroup = document.createElement('div');
-        topGroup.style.display = 'flex';
-        topGroup.style.flexDirection = 'column';
-        topGroup.appendChild(title);
-
-        // Haupttermin Block (größer)
-        const mainBlock = document.createElement('div');
-        mainBlock.style.marginTop = '8px';
+        // Haupttermin Label + Countdown (Countdown direkt nach Label im DOM)
         const mainLabel = document.createElement('div');
         mainLabel.textContent = `Termin: ${formatDateISO(exam.termin)}`;
-        mainLabel.style.fontSize = '1.05rem';
-        mainLabel.style.fontWeight = '600';
-        mainLabel.style.color = '#222';
-        mainBlock.appendChild(mainLabel);
-
-        topGroup.appendChild(mainBlock);
-
-        // Nachschreib Block (kleiner) - bleibt unten
-        const nachBlock = document.createElement('div');
-        nachBlock.style.marginTop = '8px';
-        const nachLabel = document.createElement('div');
-        nachLabel.textContent = `Nachschreibtermin: ${formatDateISO(exam.nachschreibtermin)}`;
-        nachLabel.style.fontSize = '0.95rem';
-        nachLabel.style.color = '#555';
-        nachBlock.appendChild(nachLabel);
-
-        left.appendChild(topGroup);
-        left.appendChild(nachBlock);
-
-        // Right: zwei Countdowns, jeweils rechtsbündig und am unteren Rand der linken Blöcke ausgerichtet
-        const right = document.createElement('div');
-        right.style.display = 'flex';
-        right.style.flexDirection = 'column';
-        // verteile die Countdowns so, dass einer oben, einer unten sitzt und damit auf Höhe der Labels
-        right.style.justifyContent = 'space-between';
-        right.style.alignItems = 'flex-end';
-        right.style.gap = '8px';
-        right.style.minWidth = '220px';
+        mainLabel.className = 'exam-main-label';
 
         const mainCountdown = document.createElement('div');
-        mainCountdown.className = 'exam-countdown';
-        mainCountdown.style.fontFamily = 'Consolas, "Fira Mono", monospace';
-        mainCountdown.style.fontSize = '1.25rem';
-        mainCountdown.style.fontWeight = '700';
-        mainCountdown.style.color = '#b08d00';
+        mainCountdown.className = 'exam-countdown exam-countdown-main';
         mainCountdown.textContent = 'Lädt...';
-        // Metadaten
         mainCountdown.dataset.iso = exam.termin;
         mainCountdown.dataset.type = 'termin';
 
+        // Nachschreibtermin Label + Countdown
+        const nachLabel = document.createElement('div');
+        nachLabel.textContent = `Nachschreibtermin: ${formatDateISO(exam.nachschreibtermin)}`;
+        nachLabel.className = 'exam-nach-label';
+
         const nachCountdown = document.createElement('div');
-        nachCountdown.className = 'exam-countdown';
-        nachCountdown.style.fontFamily = 'Consolas, "Fira Mono", monospace';
-        nachCountdown.style.fontSize = '0.95rem';
-        nachCountdown.style.fontWeight = '600';
-        nachCountdown.style.color = '#666';
+        nachCountdown.className = 'exam-countdown exam-countdown-nach';
         nachCountdown.textContent = 'Lädt...';
         nachCountdown.dataset.iso = exam.nachschreibtermin;
         nachCountdown.dataset.type = 'nach';
 
-        right.appendChild(mainCountdown);
-        right.appendChild(nachCountdown);
+        // Aufbau der Karte: Titel, Haupttermin+Countdown, Nachschreibtermin+Countdown
+        container.appendChild(title);
 
-        container.appendChild(left);
-        container.appendChild(right);
+        const mainBlock = document.createElement('div');
+        mainBlock.className = 'exam-main-block';
+        mainBlock.appendChild(mainLabel);
+        mainBlock.appendChild(mainCountdown);
+
+        const nachBlock = document.createElement('div');
+        nachBlock.className = 'exam-nach-block';
+        nachBlock.appendChild(nachLabel);
+        nachBlock.appendChild(nachCountdown);
+
+        container.appendChild(mainBlock);
+        container.appendChild(nachBlock);
 
         return {container, mainCountdown, nachCountdown};
     }
@@ -170,10 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Danach vollständig vergangene Prüfungen rendern (ausgegraut, nach unten)
         fullyExpired.forEach((exam) => {
             const {container, mainCountdown, nachCountdown} = createExamCard(exam);
-            // optische Hervorhebung: ausgegraut
-            container.style.opacity = '0.65';
-            container.style.filter = 'grayscale(40%)';
-            container.style.background = '#f5f5f5';
+            // optische Hervorhebung: ausgegraut (CSS-Klasse statt Inline-Styles)
+            container.classList.add('exam-expired');
             container.dataset.fullyExpired = 'true';
 
             list.appendChild(container);
