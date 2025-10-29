@@ -19,48 +19,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.createElement('div');
         container.className = 'exam-card';
 
-        const left = document.createElement('div');
-        left.className = 'exam-left';
-
+        // Titel
         const title = document.createElement('div');
         title.textContent = `${exam.fach}`;
         title.className = 'exam-title';
 
-        // Oberer Block: Titel + Haupttermin (so bleiben sie oben)
-        const topGroup = document.createElement('div');
-        topGroup.className = 'exam-top';
-        topGroup.appendChild(title);
-
-        // Haupttermin Block (größer)
-        const mainBlock = document.createElement('div');
+        // Haupttermin Label + Countdown (Countdown direkt nach Label im DOM)
         const mainLabel = document.createElement('div');
         mainLabel.textContent = `Termin: ${formatDateISO(exam.termin)}`;
         mainLabel.className = 'exam-main-label';
-        mainBlock.appendChild(mainLabel);
 
-        topGroup.appendChild(mainBlock);
+        const mainCountdown = document.createElement('div');
+        mainCountdown.className = 'exam-countdown exam-countdown-main';
+        mainCountdown.textContent = 'Lädt...';
+        mainCountdown.dataset.iso = exam.termin;
+        mainCountdown.dataset.type = 'termin';
 
-        // Nachschreib Block (kleiner) - bleibt unten
-        const nachBlock = document.createElement('div');
+        // Nachschreibtermin Label + Countdown
         const nachLabel = document.createElement('div');
         nachLabel.textContent = `Nachschreibtermin: ${formatDateISO(exam.nachschreibtermin)}`;
         nachLabel.className = 'exam-nach-label';
-        nachBlock.appendChild(nachLabel);
-
-        left.appendChild(topGroup);
-        left.appendChild(nachBlock);
-
-        // Right: zwei Countdowns, jeweils rechtsbündig und am unteren Rand der linken Blöcke ausgerichtet
-        const right = document.createElement('div');
-        right.className = 'exam-right';
-
-        const mainCountdown = document.createElement('div');
-        // Klassen: Basis + Variante
-        mainCountdown.className = 'exam-countdown exam-countdown-main';
-        mainCountdown.textContent = 'Lädt...';
-        // Metadaten
-        mainCountdown.dataset.iso = exam.termin;
-        mainCountdown.dataset.type = 'termin';
 
         const nachCountdown = document.createElement('div');
         nachCountdown.className = 'exam-countdown exam-countdown-nach';
@@ -68,11 +46,21 @@ document.addEventListener('DOMContentLoaded', () => {
         nachCountdown.dataset.iso = exam.nachschreibtermin;
         nachCountdown.dataset.type = 'nach';
 
-        right.appendChild(mainCountdown);
-        right.appendChild(nachCountdown);
+        // Aufbau der Karte: Titel, Haupttermin+Countdown, Nachschreibtermin+Countdown
+        container.appendChild(title);
 
-        container.appendChild(left);
-        container.appendChild(right);
+        const mainBlock = document.createElement('div');
+        mainBlock.className = 'exam-main-block';
+        mainBlock.appendChild(mainLabel);
+        mainBlock.appendChild(mainCountdown);
+
+        const nachBlock = document.createElement('div');
+        nachBlock.className = 'exam-nach-block';
+        nachBlock.appendChild(nachLabel);
+        nachBlock.appendChild(nachCountdown);
+
+        container.appendChild(mainBlock);
+        container.appendChild(nachBlock);
 
         return {container, mainCountdown, nachCountdown};
     }
