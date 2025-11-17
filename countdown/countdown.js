@@ -125,6 +125,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function startCountdown(idx) {
+        //TODO: nur ein Countdown gleichzeitgig aktiv:
+            // - stoppe alle Countdowns
+            // - starte den neuen Countdown
         document.getElementById('auswahl').style.display = "none";
         document.getElementById('countdown-view').style.display = "";
         document.getElementById('stunde-label').textContent = `${idx+1}. Stunde: ${stunden[idx][0]} – ${stunden[idx][1]}`;
