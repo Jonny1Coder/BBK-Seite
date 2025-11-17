@@ -125,6 +125,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function startCountdown(idx) {
+        clearInterval(countdownInterval);
         //TODO: nur ein Countdown gleichzeitgig aktiv:
             // - stoppe alle Countdowns
             // - starte den neuen Countdown
