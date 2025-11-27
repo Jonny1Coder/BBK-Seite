@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Schulstunden Countdown</title>
 <link rel="stylesheet" href="../style.css">
-  <link rel="icon" type="image/png" href="https://www.bbk.schule/typo3conf/ext/mj_bk/Resources/Public/Icons/favicon.ico"
+  <link rel="icon" type="image/png" href="https://www.bbk.schule/typo3conf/ext/mj_bk/Resources/Public/Icons/favicon.ico">
 </head>
 <body>
   <button class="home-btn" onclick="window.location.href='../index.html'">🏠 Home</button>
@@ -17,6 +17,12 @@
     <h2 id="stunde-label"></h2>
     <div class="countdown" id="countdown"></div>
     <button class="back-btn" onclick="resetView()">Zurück zur Auswahl</button>
+    <!-- Neuer Button: Bild-in-Bild für den Countdown -->
+    <button id="pip-btn" type="button" title="Countdown in Bild-in-Bild öffnen">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/>
+      </svg>
+    </button>
   </div>
     <div class="schoolend-container">
     <div class="schoolend-title">Das Ende von Leiden (18. Mai 2026):</div>

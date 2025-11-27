@@ -1,3 +1,18 @@
+/* exported resetView, renderButtons */
+// Globaler Stub, damit inline onclick="resetView()" im HTML keine "not defined"-Fehler zeigt.
+window.resetView = function() {
+    // defensives Verhalten falls Script noch nicht vollständig geladen ist
+    try {
+        const auswahl = document.getElementById && document.getElementById('auswahl');
+        if (auswahl) auswahl.style.display = "";
+        const view = document.getElementById && document.getElementById('countdown-view');
+        if (view) view.style.display = "none";
+        if (window.countdownInterval) clearInterval(window.countdownInterval);
+    } catch (e) {
+        // ignore
+    }
+};
+
 document.addEventListener("DOMContentLoaded", function() {
     // Schulende-Datum: 29. Mai 2026, 00:00:00
     const schoolEndDate = new Date(2026, 4, 18, 0, 0, 0, 0); // Monat 4 = Mai (0-basiert)
@@ -66,31 +81,6 @@ document.addEventListener("DOMContentLoaded", function() {
     setInterval(updateSchoolEndCountdown, 1000);
     updateSchoolEndCountdown();
 
-// Stundenzeiten: [Start, Ende]
-// Format: "HH:MM"
-// const stunden = [ ... ] // entfernt, wird jetzt aus bbk.js verwendet
-
-// Hilfsfunktion: Wandelt "HH:MM" in Minuten seit Tagesbeginn um
-    function timeToMinutes(str) {
-        const [h, m] = str.split(":").map(Number);
-        return h * 60 + m;
-    }
-
-// Bestimmt die aktuelle Stunde (Index), falls gerade eine läuft. Sonst -1.
-    function getCurrentStundeIndex() {
-        const now = new Date();
-        const nowMin = now.getHours() * 60 + now.getMinutes();
-        for (let i = 0; i < stunden.length; i++) {
-            const start = timeToMinutes(stunden[i][0]);
-            const end = timeToMinutes(stunden[i][1]);
-            if (nowMin >= start && nowMin < end) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-// Buttons generieren
     function renderButtons() {
         const btnGrid = document.getElementById('stunden-btns');
         btnGrid.innerHTML = ''; // Vorherige Buttons entfernen
@@ -107,8 +97,22 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    // Exportiere renderButtons und eine echte resetView-Implementierung global,
+    // damit das Inline-onclick und externe Aufrufer funktionieren.
+    window.renderButtons = renderButtons;
+    window.resetView = function() {
+        document.getElementById('auswahl').style.display = "";
+        document.getElementById('countdown-view').style.display = "none";
+        if (window.countdownInterval) clearInterval(window.countdownInterval);
+        if (typeof renderButtons === 'function') renderButtons();
+    }
+
     let countdownInterval = null;
     window.countdownInterval = countdownInterval;
+
+    let activeCountdownNode = document.getElementById('countdown');
+    let pipWindowRef = null;
+    let pipWindowCountdownNode = null;
 
     function parseTime(str) {
         const [h, m] = str.split(":").map(Number);
@@ -125,15 +129,19 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function startCountdown(idx) {
-        clearInterval(countdownInterval);
-        //TODO: nur ein Countdown gleichzeitgig aktiv:
-            // - stoppe alle Countdowns
-            // - starte den neuen Countdown
+        // stoppe evtl. vorherigen Countdown
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+            window.countdownInterval = null;
+        }
         document.getElementById('auswahl').style.display = "none";
         document.getElementById('countdown-view').style.display = "";
         document.getElementById('stunde-label').textContent = `${idx+1}. Stunde: ${stunden[idx][0]} – ${stunden[idx][1]}`;
         updateCountdown(idx);
         countdownInterval = setInterval(() => updateCountdown(idx), 1000);
+        // keep the global reference in sync so resetView() can clear it
+        window.countdownInterval = countdownInterval;
     }
 
     function updateCountdown(idx) {
@@ -142,30 +150,190 @@ document.addEventListener("DOMContentLoaded", function() {
         let diff = Math.floor((end - now) / 1000);
 
         if (diff <= 0) {
-            document.getElementById('countdown').textContent = "Die Stunde ist vorbei!";
-            clearInterval(countdownInterval);
+            const finishedText = "Die Stunde ist vorbei!";
+            if (activeCountdownNode) activeCountdownNode.textContent = finishedText;
+            if (pipWindowRef) {
+                try {
+                    if (typeof pipWindowRef.setCountdownText === 'function') {
+                        pipWindowRef.setCountdownText(finishedText);
+                    } else if (pipWindowCountdownNode) {
+                        pipWindowCountdownNode.textContent = finishedText;
+                    }
+                } catch (e) {
+                    pipWindowCountdownNode = null;
+                    pipWindowRef = null;
+                }
+            } else if (pipWindowCountdownNode) {
+                try { pipWindowCountdownNode.textContent = finishedText; } catch (e) { pipWindowCountdownNode = null; }
+            }
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+                window.countdownInterval = null;
+            }
             return;
         }
         const h = Math.floor(diff / 3600);
         diff %= 3600;
         const m = Math.floor(diff / 60);
         const s = diff % 60;
-        document.getElementById('countdown').textContent =
-            (h > 0 ? `${h}h ` : "") +
-            `${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+        const text = (h > 0 ? `${h}h ` : "") + `${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+
+        if (activeCountdownNode) {
+            activeCountdownNode.textContent = text;
+        }
+        if (pipWindowRef) {
+            try {
+                if (typeof pipWindowRef.setCountdownText === 'function') {
+                    pipWindowRef.setCountdownText(text);
+                } else if (pipWindowCountdownNode) {
+                    pipWindowCountdownNode.textContent = text;
+                }
+            } catch (e) {
+                pipWindowCountdownNode = null;
+                pipWindowRef = null;
+            }
+        } else if (pipWindowCountdownNode) {
+            try {
+                pipWindowCountdownNode.textContent = text;
+            } catch (e) {
+                pipWindowCountdownNode = null;
+            }
+        }
     }
 
     // Initiales Rendern der Buttons mit Markierung
     renderButtons();
 
-    // Optional: Die Buttons alle paar Minuten neu rendern, damit die Markierung aktualisiert wird
-    setInterval(renderButtons, 60 * 1000); // jede Minute
-})
+    // --- Picture-in-Picture (Document Picture-in-Picture API) Button-Handler ---
+    const pipBtn = document.getElementById('pip-btn');
+    if (pipBtn) {
+        const isPipSupported = typeof documentPictureInPicture !== 'undefined' && typeof documentPictureInPicture.requestWindow === 'function';
 
-// Funktion zum Zurücksetzen der Ansicht (global verfügbar)
-function resetView() {
-    document.getElementById('auswahl').style.display = "";
-    document.getElementById('countdown-view').style.display = "none";
-    if (window.countdownInterval) clearInterval(window.countdownInterval);
-    renderButtons(); // Buttons neu rendern, falls sich die aktuelle Stunde geändert hat
-}
+        async function openCountdownInPiP() {
+            if (!isPipSupported) {
+                alert('Ihr Browser unterstützt die Document Picture-in-Picture API nicht.');
+                return;
+            }
+
+            const countdownDiv = document.getElementById('countdown');
+            if (!countdownDiv) {
+                alert('Countdown-Element nicht gefunden.');
+                return;
+            }
+
+            try {
+                pipBtn.disabled = true;
+                // Öffne ein neues PiP-Fenster
+                const pipWindow = await documentPictureInPicture.requestWindow({ width: 320, height: 140 });
+
+                // Kopiere notwendige Styles in das PiP-Dokument, damit das Aussehen erhalten bleibt
+                const styles = document.querySelectorAll('link[rel="stylesheet"], style');
+                styles.forEach(style => {
+                    try {
+                        pipWindow.document.head.appendChild(style.cloneNode(true));
+                    } catch (e) {
+                        // Ignoriere wenn ein Style nicht kopiert werden kann
+                        console.warn('Style konnte nicht kopiert werden:', e);
+                    }
+                });
+
+                // Etwas Basis-Layout für das PiP-Fenster
+                pipWindow.document.body.style.margin = '0';
+                pipWindow.document.body.style.display = 'flex';
+                pipWindow.document.body.style.alignItems = 'center';
+                pipWindow.document.body.style.justifyContent = 'center';
+                pipWindow.document.body.style.background = 'white';
+
+                // PiP-spezifische CSS: kleinere Schrift und schwarzer Text
+                const pipStyle = pipWindow.document.createElement('style');
+                pipStyle.textContent = `
+                  
+                  body {
+                    font-size: 11px !important;
+                    color: #000 !important;
+                    background: #fff !important;
+                    margin:0;
+                    padding:0;
+                    align-items:center;
+                    justify-content:center;
+                    font-family: Arial, Helvetica, sans-serif !important;
+                    height: 50%
+                  }
+                  #countdown, .countdown {
+                    font-size: 18px !important;
+                    color: #000 !important;
+                    font-weight:700 !important;
+                    line-height:1 !important;
+                  }
+                  #stunde-label {
+                      font-size: 12px !important;
+                      color: #000 !important;
+                      font-weight:800 !important;
+                      margin:0 0 4px 0; padding:0;
+                  }
+                  .schoolend-countdown, .exam-countdown {
+                    color: #000 !important;
+                  }
+                  .countdown {
+                      margin: 0 !important;
+                      padding: 0 !important;
+                  }
+                `;
+                pipWindow.document.head.appendChild(pipStyle);
+
+                try {
+                    const pipClone = countdownDiv.cloneNode(true);
+                    // give it a unique id inside the PiP document
+                    pipClone.id = 'countdown-pip';
+                    pipWindow.document.body.appendChild(pipClone);
+
+                    // create a small script in the PiP window that exposes a setter function
+                    try {
+                        const pipScript = pipWindow.document.createElement('script');
+                        pipScript.type = 'text/javascript';
+                        pipScript.text = `window.setCountdownText = function(t){ try{ var el = document.getElementById('countdown-pip'); if(el) el.textContent = t;}catch(e){} };`;
+                        pipWindow.document.head.appendChild(pipScript);
+                    } catch (e) {
+                        console.warn('Konnte PiP-Update-Skript nicht einfügen:', e);
+                    }
+
+                    pipWindowRef = pipWindow;
+                    pipWindowCountdownNode = pipClone;
+                } catch (e) {
+                    console.warn('Konnte Countdown-Kopie im PiP-Fenster nicht erstellen:', e);
+                }
+
+                // Wenn das PiP-Fenster geschlossen wird: nur Referenzen aufräumen und Button aktivieren
+                const restore = () => {
+                    try {
+                        if (pipWindowRef) {
+                            try {
+                                const el = pipWindowRef.document.getElementById('countdown-pip');
+                                if (el && el.parentNode) el.parentNode.removeChild(el);
+                            } catch (e) {
+                                // ignore
+                            }
+                        }
+                        pipWindowCountdownNode = null;
+                        pipWindowRef = null;
+                     } catch (e) {
+                         console.error('Fehler beim Rückverschieben des Countdowns:', e);
+                        pipWindowCountdownNode = null;
+                        pipWindowRef = null;
+                     }
+                     pipBtn.disabled = false;
+                 };
+
+                 pipWindow.addEventListener('unload', restore);
+
+             } catch (err) {
+                 pipBtn.disabled = false;
+                 alert('Fehler beim Öffnen des PiP-Fensters: ' + (err && err.message ? err.message : err));
+             }
+         }
+
+         pipBtn.addEventListener('click', openCountdownInPiP);
+     }
+
+})
