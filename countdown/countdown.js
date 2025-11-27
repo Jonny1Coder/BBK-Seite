@@ -209,6 +209,31 @@ document.addEventListener("DOMContentLoaded", function() {
                 pipWindow.document.body.style.justifyContent = 'center';
                 pipWindow.document.body.style.background = 'white';
 
+                // PiP-spezifische CSS: kleinere Schrift und schwarzer Text
+                const pipStyle = pipWindow.document.createElement('style');
+                pipStyle.textContent = `
+                  
+                  body {
+                    font-size: 11px !important;
+                    color: #000 !important;
+                    background: #fff !important;
+                    margin:0;
+                    padding:0;
+                    align-items:center;
+                    justify-content:center;
+                    font-family: Arial, Helvetica, sans-serif !important;
+                    height: 50%}
+                  /* Countdown selbst kompakt und gut lesbar */
+                  #countdown, .countdown { font-size: 18px !important; color: #000 !important; font-weight:700 !important; line-height:1 !important; }
+                  /* Falls das Label mit in das PiP-Fenster verschoben wird */
+                  #stunde-label { font-size: 12px !important; color: #000 !important; font-weight:800 !important; margin:0 0 4px 0; padding:0; }
+                  /* Zusätzliche allgemeine Regeln */
+                  .schoolend-countdown, .exam-countdown { color: #000 !important; }
+                  /* Entferne größere Abstände für den kleinen PiP-View */
+                  .countdown { margin: 0 !important; padding: 0 !important; }
+                `;
+                pipWindow.document.head.appendChild(pipStyle);
+
                 // Verschiebe das eigentliche Countdown-Element in das PiP-Fenster
                 pipWindow.document.body.appendChild(countdownDiv);
 
