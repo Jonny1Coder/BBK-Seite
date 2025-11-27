@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Schulstunden Countdown</title>
 <link rel="stylesheet" href="../style.css">
-  <link rel="icon" type="image/png" href="https://www.bbk.schule/typo3conf/ext/mj_bk/Resources/Public/Icons/favicon.ico"
+  <link rel="icon" type="image/png" href="https://www.bbk.schule/typo3conf/ext/mj_bk/Resources/Public/Icons/favicon.ico">
 </head>
 <body>
   <button class="home-btn" onclick="window.location.href='../index.html'">🏠 Home</button>
@@ -16,6 +16,8 @@
   <div id="countdown-view" style="display:none;">
     <h2 id="stunde-label"></h2>
     <div class="countdown" id="countdown"></div>
+    <!-- Neuer Button: Bild-in-Bild für den Countdown -->
+    <button id="pip-btn" class="link-btn" type="button" title="Countdown in Bild-in-Bild öffnen">PiP öffnen</button>
     <button class="back-btn" onclick="resetView()">Zurück zur Auswahl</button>
   </div>
     <div class="schoolend-container">

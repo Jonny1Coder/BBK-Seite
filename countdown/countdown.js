@@ -125,15 +125,19 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function startCountdown(idx) {
-        clearInterval(countdownInterval);
-        //TODO: nur ein Countdown gleichzeitgig aktiv:
-            // - stoppe alle Countdowns
-            // - starte den neuen Countdown
+        // stoppe evtl. vorherigen Countdown
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+            window.countdownInterval = null;
+        }
         document.getElementById('auswahl').style.display = "none";
         document.getElementById('countdown-view').style.display = "";
         document.getElementById('stunde-label').textContent = `${idx+1}. Stunde: ${stunden[idx][0]} – ${stunden[idx][1]}`;
         updateCountdown(idx);
         countdownInterval = setInterval(() => updateCountdown(idx), 1000);
+        // keep the global reference in sync so resetView() can clear it
+        window.countdownInterval = countdownInterval;
     }
 
     function updateCountdown(idx) {
@@ -143,7 +147,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (diff <= 0) {
             document.getElementById('countdown').textContent = "Die Stunde ist vorbei!";
-            clearInterval(countdownInterval);
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+                window.countdownInterval = null;
+            }
             return;
         }
         const h = Math.floor(diff / 3600);
@@ -160,6 +168,81 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Optional: Die Buttons alle paar Minuten neu rendern, damit die Markierung aktualisiert wird
     setInterval(renderButtons, 60 * 1000); // jede Minute
+
+    // --- Picture-in-Picture (Document Picture-in-Picture API) Button-Handler ---
+    const pipBtn = document.getElementById('pip-btn');
+    if (pipBtn) {
+        const isPipSupported = typeof documentPictureInPicture !== 'undefined' && typeof documentPictureInPicture.requestWindow === 'function';
+
+        async function openCountdownInPiP() {
+            if (!isPipSupported) {
+                alert('Ihr Browser unterstützt die Document Picture-in-Picture API nicht.');
+                return;
+            }
+
+            const countdownDiv = document.getElementById('countdown');
+            if (!countdownDiv) {
+                alert('Countdown-Element nicht gefunden.');
+                return;
+            }
+
+            try {
+                pipBtn.disabled = true;
+                // Öffne ein neues PiP-Fenster
+                const pipWindow = await documentPictureInPicture.requestWindow({ width: 320, height: 140 });
+
+                // Kopiere notwendige Styles in das PiP-Dokument, damit das Aussehen erhalten bleibt
+                const styles = document.querySelectorAll('link[rel="stylesheet"], style');
+                styles.forEach(style => {
+                    try {
+                        pipWindow.document.head.appendChild(style.cloneNode(true));
+                    } catch (e) {
+                        // Ignoriere wenn ein Style nicht kopiert werden kann
+                        console.warn('Style konnte nicht kopiert werden:', e);
+                    }
+                });
+
+                // Etwas Basis-Layout für das PiP-Fenster
+                pipWindow.document.body.style.margin = '0';
+                pipWindow.document.body.style.display = 'flex';
+                pipWindow.document.body.style.alignItems = 'center';
+                pipWindow.document.body.style.justifyContent = 'center';
+                pipWindow.document.body.style.background = 'white';
+
+                // Verschiebe das eigentliche Countdown-Element in das PiP-Fenster
+                pipWindow.document.body.appendChild(countdownDiv);
+
+                // Wenn das PiP-Fenster geschlossen wird: Countdown zurückverschieben und Button aktivieren
+                const restore = () => {
+                    try {
+                        const target = document.getElementById('countdown-view') || document.body;
+                        // Füge das Countdown-Div vor dem PiP-Button wieder ein (so wie vorher)
+                        const ref = document.getElementById('pip-btn');
+                        if (ref && target.contains(ref)) {
+                            target.insertBefore(countdownDiv, ref);
+                        } else {
+                            // Fallback: einfach an Ende
+                            target.appendChild(countdownDiv);
+                        }
+                    } catch (e) {
+                        console.error('Fehler beim Rückverschieben des Countdowns:', e);
+                        // Fallback: body
+                        document.body.appendChild(countdownDiv);
+                    }
+                    pipBtn.disabled = false;
+                };
+
+                pipWindow.addEventListener('unload', restore);
+
+            } catch (err) {
+                pipBtn.disabled = false;
+                alert('Fehler beim Öffnen des PiP-Fensters: ' + (err && err.message ? err.message : err));
+            }
+        }
+
+        pipBtn.addEventListener('click', openCountdownInPiP);
+    }
+
 })
 
 // Funktion zum Zurücksetzen der Ansicht (global verfügbar)
