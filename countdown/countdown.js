@@ -1,3 +1,18 @@
+/* exported resetView, renderButtons */
+// Globaler Stub, damit inline onclick="resetView()" im HTML keine "not defined"-Fehler zeigt.
+window.resetView = function() {
+    // defensives Verhalten falls Script noch nicht vollständig geladen ist
+    try {
+        const auswahl = document.getElementById && document.getElementById('auswahl');
+        if (auswahl) auswahl.style.display = "";
+        const view = document.getElementById && document.getElementById('countdown-view');
+        if (view) view.style.display = "none";
+        if (window.countdownInterval) clearInterval(window.countdownInterval);
+    } catch (e) {
+        // ignore
+    }
+};
+
 document.addEventListener("DOMContentLoaded", function() {
     // Schulende-Datum: 29. Mai 2026, 00:00:00
     const schoolEndDate = new Date(2026, 4, 18, 0, 0, 0, 0); // Monat 4 = Mai (0-basiert)
@@ -66,31 +81,6 @@ document.addEventListener("DOMContentLoaded", function() {
     setInterval(updateSchoolEndCountdown, 1000);
     updateSchoolEndCountdown();
 
-// Stundenzeiten: [Start, Ende]
-// Format: "HH:MM"
-// const stunden = [ ... ] // entfernt, wird jetzt aus bbk.js verwendet
-
-// Hilfsfunktion: Wandelt "HH:MM" in Minuten seit Tagesbeginn um
-    function timeToMinutes(str) {
-        const [h, m] = str.split(":").map(Number);
-        return h * 60 + m;
-    }
-
-// Bestimmt die aktuelle Stunde (Index), falls gerade eine läuft. Sonst -1.
-    function getCurrentStundeIndex() {
-        const now = new Date();
-        const nowMin = now.getHours() * 60 + now.getMinutes();
-        for (let i = 0; i < stunden.length; i++) {
-            const start = timeToMinutes(stunden[i][0]);
-            const end = timeToMinutes(stunden[i][1]);
-            if (nowMin >= start && nowMin < end) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-// Buttons generieren
     function renderButtons() {
         const btnGrid = document.getElementById('stunden-btns');
         btnGrid.innerHTML = ''; // Vorherige Buttons entfernen
@@ -107,11 +97,19 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    // Exportiere renderButtons und eine echte resetView-Implementierung global,
+    // damit das Inline-onclick und externe Aufrufer funktionieren.
+    window.renderButtons = renderButtons;
+    window.resetView = function() {
+        document.getElementById('auswahl').style.display = "";
+        document.getElementById('countdown-view').style.display = "none";
+        if (window.countdownInterval) clearInterval(window.countdownInterval);
+        if (typeof renderButtons === 'function') renderButtons();
+    }
+
     let countdownInterval = null;
     window.countdownInterval = countdownInterval;
 
-    // Shared reference to the actual countdown DOM node in the main document.
-    // We will also maintain a reference to a PiP copy if PiP is open.
     let activeCountdownNode = document.getElementById('countdown');
     let pipWindowRef = null;
     let pipWindowCountdownNode = null;
@@ -207,9 +205,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // Initiales Rendern der Buttons mit Markierung
     renderButtons();
 
-    // Optional: Die Buttons alle paar Minuten neu rendern, damit die Markierung aktualisiert wird
-    setInterval(renderButtons, 60 * 1000); // jede Minute
-
     // --- Picture-in-Picture (Document Picture-in-Picture API) Button-Handler ---
     const pipBtn = document.getElementById('pip-btn');
     if (pipBtn) {
@@ -263,19 +258,30 @@ document.addEventListener("DOMContentLoaded", function() {
                     align-items:center;
                     justify-content:center;
                     font-family: Arial, Helvetica, sans-serif !important;
-                    height: 50%}
-                  /* Countdown selbst kompakt und gut lesbar */
-                  #countdown, .countdown { font-size: 18px !important; color: #000 !important; font-weight:700 !important; line-height:1 !important; }
-                  /* Falls das Label mit in das PiP-Fenster verschoben wird */
-                  #stunde-label { font-size: 12px !important; color: #000 !important; font-weight:800 !important; margin:0 0 4px 0; padding:0; }
-                  /* Zusätzliche allgemeine Regeln */
-                  .schoolend-countdown, .exam-countdown { color: #000 !important; }
-                  /* Entferne größere Abstände für den kleinen PiP-View */
-                  .countdown { margin: 0 !important; padding: 0 !important; }
+                    height: 50%
+                  }
+                  #countdown, .countdown {
+                    font-size: 18px !important;
+                    color: #000 !important;
+                    font-weight:700 !important;
+                    line-height:1 !important;
+                  }
+                  #stunde-label {
+                      font-size: 12px !important;
+                      color: #000 !important;
+                      font-weight:800 !important;
+                      margin:0 0 4px 0; padding:0;
+                  }
+                  .schoolend-countdown, .exam-countdown {
+                    color: #000 !important;
+                  }
+                  .countdown {
+                      margin: 0 !important;
+                      padding: 0 !important;
+                  }
                 `;
                 pipWindow.document.head.appendChild(pipStyle);
 
-                // Statt das Original zu verschieben, erstelle eine Kopie im PiP-Fenster
                 try {
                     const pipClone = countdownDiv.cloneNode(true);
                     // give it a unique id inside the PiP document
@@ -301,9 +307,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Wenn das PiP-Fenster geschlossen wird: nur Referenzen aufräumen und Button aktivieren
                 const restore = () => {
                     try {
-                        // nothing to move back because we cloned; simply clear the PiP references
                         if (pipWindowRef) {
-                            // try to remove the cloned node from pipWindow if still present
                             try {
                                 const el = pipWindowRef.document.getElementById('countdown-pip');
                                 if (el && el.parentNode) el.parentNode.removeChild(el);
@@ -333,11 +337,3 @@ document.addEventListener("DOMContentLoaded", function() {
      }
 
 })
-
-// Funktion zum Zurücksetzen der Ansicht (global verfügbar)
-function resetView() {
-    document.getElementById('auswahl').style.display = "";
-    document.getElementById('countdown-view').style.display = "none";
-    if (window.countdownInterval) clearInterval(window.countdownInterval);
-    renderButtons(); // Buttons neu rendern, falls sich die aktuelle Stunde geändert hat
-}
