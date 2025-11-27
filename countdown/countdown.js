@@ -110,6 +110,12 @@ document.addEventListener("DOMContentLoaded", function() {
     let countdownInterval = null;
     window.countdownInterval = countdownInterval;
 
+    // Shared reference to the actual countdown DOM node in the main document.
+    // We will also maintain a reference to a PiP copy if PiP is open.
+    let activeCountdownNode = document.getElementById('countdown');
+    let pipWindowRef = null;
+    let pipWindowCountdownNode = null;
+
     function parseTime(str) {
         const [h, m] = str.split(":").map(Number);
         return {h, m};
@@ -146,7 +152,22 @@ document.addEventListener("DOMContentLoaded", function() {
         let diff = Math.floor((end - now) / 1000);
 
         if (diff <= 0) {
-            document.getElementById('countdown').textContent = "Die Stunde ist vorbei!";
+            const finishedText = "Die Stunde ist vorbei!";
+            if (activeCountdownNode) activeCountdownNode.textContent = finishedText;
+            if (pipWindowRef) {
+                try {
+                    if (typeof pipWindowRef.setCountdownText === 'function') {
+                        pipWindowRef.setCountdownText(finishedText);
+                    } else if (pipWindowCountdownNode) {
+                        pipWindowCountdownNode.textContent = finishedText;
+                    }
+                } catch (e) {
+                    pipWindowCountdownNode = null;
+                    pipWindowRef = null;
+                }
+            } else if (pipWindowCountdownNode) {
+                try { pipWindowCountdownNode.textContent = finishedText; } catch (e) { pipWindowCountdownNode = null; }
+            }
             if (countdownInterval) {
                 clearInterval(countdownInterval);
                 countdownInterval = null;
@@ -158,9 +179,29 @@ document.addEventListener("DOMContentLoaded", function() {
         diff %= 3600;
         const m = Math.floor(diff / 60);
         const s = diff % 60;
-        document.getElementById('countdown').textContent =
-            (h > 0 ? `${h}h ` : "") +
-            `${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+        const text = (h > 0 ? `${h}h ` : "") + `${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+
+        if (activeCountdownNode) {
+            activeCountdownNode.textContent = text;
+        }
+        if (pipWindowRef) {
+            try {
+                if (typeof pipWindowRef.setCountdownText === 'function') {
+                    pipWindowRef.setCountdownText(text);
+                } else if (pipWindowCountdownNode) {
+                    pipWindowCountdownNode.textContent = text;
+                }
+            } catch (e) {
+                pipWindowCountdownNode = null;
+                pipWindowRef = null;
+            }
+        } else if (pipWindowCountdownNode) {
+            try {
+                pipWindowCountdownNode.textContent = text;
+            } catch (e) {
+                pipWindowCountdownNode = null;
+            }
+        }
     }
 
     // Initiales Rendern der Buttons mit Markierung
@@ -234,39 +275,62 @@ document.addEventListener("DOMContentLoaded", function() {
                 `;
                 pipWindow.document.head.appendChild(pipStyle);
 
-                // Verschiebe das eigentliche Countdown-Element in das PiP-Fenster
-                pipWindow.document.body.appendChild(countdownDiv);
+                // Statt das Original zu verschieben, erstelle eine Kopie im PiP-Fenster
+                try {
+                    const pipClone = countdownDiv.cloneNode(true);
+                    // give it a unique id inside the PiP document
+                    pipClone.id = 'countdown-pip';
+                    pipWindow.document.body.appendChild(pipClone);
 
-                // Wenn das PiP-Fenster geschlossen wird: Countdown zurückverschieben und Button aktivieren
+                    // create a small script in the PiP window that exposes a setter function
+                    try {
+                        const pipScript = pipWindow.document.createElement('script');
+                        pipScript.type = 'text/javascript';
+                        pipScript.text = `window.setCountdownText = function(t){ try{ var el = document.getElementById('countdown-pip'); if(el) el.textContent = t;}catch(e){} };`;
+                        pipWindow.document.head.appendChild(pipScript);
+                    } catch (e) {
+                        console.warn('Konnte PiP-Update-Skript nicht einfügen:', e);
+                    }
+
+                    pipWindowRef = pipWindow;
+                    pipWindowCountdownNode = pipClone;
+                } catch (e) {
+                    console.warn('Konnte Countdown-Kopie im PiP-Fenster nicht erstellen:', e);
+                }
+
+                // Wenn das PiP-Fenster geschlossen wird: nur Referenzen aufräumen und Button aktivieren
                 const restore = () => {
                     try {
-                        const target = document.getElementById('countdown-view') || document.body;
-                        // Füge das Countdown-Div vor dem PiP-Button wieder ein (so wie vorher)
-                        const ref = document.getElementById('pip-btn');
-                        if (ref && target.contains(ref)) {
-                            target.insertBefore(countdownDiv, ref);
-                        } else {
-                            // Fallback: einfach an Ende
-                            target.appendChild(countdownDiv);
+                        // nothing to move back because we cloned; simply clear the PiP references
+                        if (pipWindowRef) {
+                            // try to remove the cloned node from pipWindow if still present
+                            try {
+                                const el = pipWindowRef.document.getElementById('countdown-pip');
+                                if (el && el.parentNode) el.parentNode.removeChild(el);
+                            } catch (e) {
+                                // ignore
+                            }
                         }
-                    } catch (e) {
-                        console.error('Fehler beim Rückverschieben des Countdowns:', e);
-                        // Fallback: body
-                        document.body.appendChild(countdownDiv);
-                    }
-                    pipBtn.disabled = false;
-                };
+                        pipWindowCountdownNode = null;
+                        pipWindowRef = null;
+                     } catch (e) {
+                         console.error('Fehler beim Rückverschieben des Countdowns:', e);
+                        pipWindowCountdownNode = null;
+                        pipWindowRef = null;
+                     }
+                     pipBtn.disabled = false;
+                 };
 
-                pipWindow.addEventListener('unload', restore);
+                 pipWindow.addEventListener('unload', restore);
 
-            } catch (err) {
-                pipBtn.disabled = false;
-                alert('Fehler beim Öffnen des PiP-Fensters: ' + (err && err.message ? err.message : err));
-            }
-        }
+             } catch (err) {
+                 pipBtn.disabled = false;
+                 alert('Fehler beim Öffnen des PiP-Fensters: ' + (err && err.message ? err.message : err));
+             }
+         }
 
-        pipBtn.addEventListener('click', openCountdownInPiP);
-    }
+         pipBtn.addEventListener('click', openCountdownInPiP);
+     }
 
 })
 
