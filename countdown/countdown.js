@@ -46,27 +46,12 @@ document.addEventListener("DOMContentLoaded", function() {
             years -= 1;
             months += 12;
         }
-        // Zeitanteile (h:m:s)
-        let base = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-        let diffMillis = target - now;
-        let diffSeconds = Math.floor((target - now) / 1000);
 
-        let hours = now.getHours() > 0 || now.getMinutes() > 0 || now.getSeconds() > 0
-            ? 23 - now.getHours()
-            : 0;
-        let minutes = now.getMinutes() > 0 || now.getSeconds() > 0
-            ? 59 - now.getMinutes()
-            : 0;
-        let seconds = now.getSeconds() > 0
-            ? 60 - now.getSeconds()
-            : 0;
-        // Alternativ: Restzeit nach Tagen abziehen
-        let rest = target - new Date(now.getFullYear(), now.getMonth(), now.getDate()+days+months*30+years*365, 0, 0, 0, 0);
-        let total = target - now;
-        let totalSec = Math.floor(total / 1000);
-        let s = totalSec % 60;
-        let m = Math.floor(totalSec / 60) % 60;
-        let h = Math.floor(totalSec / 3600) % 24;
+        // Gesamtsekunden bis zum Ziel
+        const totalSec = Math.floor((target - now) / 1000);
+        const s = totalSec % 60;
+        const m = Math.floor(totalSec / 60) % 60;
+        const h = Math.floor(totalSec / 3600) % 24;
 
         // Anzeige
         let out = "";
@@ -104,6 +89,8 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('auswahl').style.display = "";
         document.getElementById('countdown-view').style.display = "none";
         if (window.countdownInterval) clearInterval(window.countdownInterval);
+        // leere die Zielanzeige
+        const t = document.getElementById('stunde-target'); if (t) t.textContent = '';
         if (typeof renderButtons === 'function') renderButtons();
     }
 
@@ -140,20 +127,34 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         document.getElementById('auswahl').style.display = "none";
         document.getElementById('countdown-view').style.display = "";
+        // Überschrift zeigt nur die Stunde/Fach
         document.getElementById('stunde-label').textContent = `${idx+1}. Stunde: ${stunden[idx][0]} – ${stunden[idx][1]}`;
+        // Ziel-Uhrzeit separat anzeigen
+        const targetEl = document.getElementById('stunde-target');
+        if (targetEl) targetEl.textContent = '';
         // create a mutable target date so shift buttons can modify it
         currentTargetDate = getTargetTime(idx);
         currentLessonIndex = idx;
+        // initiale Anzeige der Zielzeit
+        updateTargetDisplay();
         updateCountdown();
         countdownInterval = setInterval(() => updateCountdown(), 1000);
         // keep the global reference in sync so resetView() can clear it
         window.countdownInterval = countdownInterval;
     }
 
-    function updateCountdown(idx) {
-        if (!currentTargetDate) return;
-        const now = new Date();
-        let diffSec = Math.floor((currentTargetDate - now) / 1000);
+    function updateTargetDisplay(){
+        const targetEl = document.getElementById('stunde-target');
+        if (!targetEl || !currentTargetDate) return;
+        const hh = String(currentTargetDate.getHours()).padStart(2,'0');
+        const mm = String(currentTargetDate.getMinutes()).padStart(2,'0');
+        targetEl.textContent = `Ziel: ${hh}:${mm}`;
+    }
+
+    function updateCountdown() {
+         if (!currentTargetDate) return;
+         const now = new Date();
+         let diffSec = Math.floor((currentTargetDate - now) / 1000);
 
         // If target is already passed, show "Die Stunde ist vorbei!" and stop interval
         if (diffSec <= 0) {
@@ -200,9 +201,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!currentTargetDate) return;
         currentTargetDate = new Date(currentTargetDate.getTime() + minutes * 60 * 1000);
         // update label to reflect changed target (optional)
-        if (currentLessonIndex !== null) {
-            document.getElementById('stunde-label').textContent = `${currentLessonIndex+1}. Stunde: ${stunden[currentLessonIndex][0]} – ${stunden[currentLessonIndex][1]} (Ziel: ${currentTargetDate.getHours().toString().padStart(2,'0')}:${currentTargetDate.getMinutes().toString().padStart(2,'0')})`;
-        }
+        updateTargetDisplay();
         updateCountdown();
     }
 

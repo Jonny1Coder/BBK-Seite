@@ -42,8 +42,17 @@ button:hover {
 }
 .countdown {
     font-size: 2.5rem;
-    margin-top: 30px;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
     color: #004085;
+}
+
+/* Neues Element für die Ziel-Uhrzeit der Stunde */
+.stunde-target, #stunde-target {
+    margin-top: 6px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0b5394; /* dunkelblau */
 }
 .back-btn {
     margin-top: 30px;
@@ -231,6 +240,10 @@ button:hover {
     }
     .countdown {
         font-size: 2em;
+    }
+    /* mobile: Zielzeit größer sichtbarer machen */
+    .stunde-target, #stunde-target {
+        font-size: 1.6rem;
     }
     .schoolend-title, .schoolend-countdown {
         font-size: 1em;
