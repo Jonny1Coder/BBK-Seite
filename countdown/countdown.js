@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     height: 50%
                   }
                   #countdown, .countdown {
-                    font-size: 18px !important;
+                    font-size: 34px !important;
                     color: #000 !important;
                     font-weight:700 !important;
                     line-height:1 !important;
