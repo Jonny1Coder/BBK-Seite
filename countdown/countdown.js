@@ -46,27 +46,12 @@ document.addEventListener("DOMContentLoaded", function() {
             years -= 1;
             months += 12;
         }
-        // Zeitanteile (h:m:s)
-        let base = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-        let diffMillis = target - now;
-        let diffSeconds = Math.floor((target - now) / 1000);
 
-        let hours = now.getHours() > 0 || now.getMinutes() > 0 || now.getSeconds() > 0
-            ? 23 - now.getHours()
-            : 0;
-        let minutes = now.getMinutes() > 0 || now.getSeconds() > 0
-            ? 59 - now.getMinutes()
-            : 0;
-        let seconds = now.getSeconds() > 0
-            ? 60 - now.getSeconds()
-            : 0;
-        // Alternativ: Restzeit nach Tagen abziehen
-        let rest = target - new Date(now.getFullYear(), now.getMonth(), now.getDate()+days+months*30+years*365, 0, 0, 0, 0);
-        let total = target - now;
-        let totalSec = Math.floor(total / 1000);
-        let s = totalSec % 60;
-        let m = Math.floor(totalSec / 60) % 60;
-        let h = Math.floor(totalSec / 3600) % 24;
+        // Gesamtsekunden bis zum Ziel
+        const totalSec = Math.floor((target - now) / 1000);
+        const s = totalSec % 60;
+        const m = Math.floor(totalSec / 60) % 60;
+        const h = Math.floor(totalSec / 3600) % 24;
 
         // Anzeige
         let out = "";
@@ -104,6 +89,8 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('auswahl').style.display = "";
         document.getElementById('countdown-view').style.display = "none";
         if (window.countdownInterval) clearInterval(window.countdownInterval);
+        // leere die Zielanzeige
+        const t = document.getElementById('stunde-target'); if (t) t.textContent = '';
         if (typeof renderButtons === 'function') renderButtons();
     }
 
@@ -113,6 +100,9 @@ document.addEventListener("DOMContentLoaded", function() {
     let activeCountdownNode = document.getElementById('countdown');
     let pipWindowRef = null;
     let pipWindowCountdownNode = null;
+    // mutable target date for currently selected lesson
+    let currentTargetDate = null;
+    let currentLessonIndex = null;
 
     function parseTime(str) {
         const [h, m] = str.split(":").map(Number);
@@ -137,70 +127,89 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         document.getElementById('auswahl').style.display = "none";
         document.getElementById('countdown-view').style.display = "";
+        // Überschrift zeigt nur die Stunde/Fach
         document.getElementById('stunde-label').textContent = `${idx+1}. Stunde: ${stunden[idx][0]} – ${stunden[idx][1]}`;
-        updateCountdown(idx);
-        countdownInterval = setInterval(() => updateCountdown(idx), 1000);
+        // Ziel-Uhrzeit separat anzeigen
+        const targetEl = document.getElementById('stunde-target');
+        if (targetEl) targetEl.textContent = '';
+        // create a mutable target date so shift buttons can modify it
+        currentTargetDate = getTargetTime(idx);
+        currentLessonIndex = idx;
+        // initiale Anzeige der Zielzeit
+        updateTargetDisplay();
+        updateCountdown();
+        countdownInterval = setInterval(() => updateCountdown(), 1000);
         // keep the global reference in sync so resetView() can clear it
         window.countdownInterval = countdownInterval;
     }
 
-    function updateCountdown(idx) {
-        const now = new Date();
-        const end = getTargetTime(idx);
-        let diff = Math.floor((end - now) / 1000);
+    function updateTargetDisplay(){
+        const targetEl = document.getElementById('stunde-target');
+        if (!targetEl || !currentTargetDate) return;
+        const hh = String(currentTargetDate.getHours()).padStart(2,'0');
+        const mm = String(currentTargetDate.getMinutes()).padStart(2,'0');
+        targetEl.textContent = `Ziel: ${hh}:${mm}`;
+    }
 
-        if (diff <= 0) {
+    function updateCountdown() {
+         if (!currentTargetDate) return;
+         const now = new Date();
+         let diffSec = Math.floor((currentTargetDate - now) / 1000);
+
+        // If target is already passed, show "Die Stunde ist vorbei!" and stop interval
+        if (diffSec <= 0) {
             const finishedText = "Die Stunde ist vorbei!";
             if (activeCountdownNode) activeCountdownNode.textContent = finishedText;
-            if (pipWindowRef) {
-                try {
-                    if (typeof pipWindowRef.setCountdownText === 'function') {
-                        pipWindowRef.setCountdownText(finishedText);
-                    } else if (pipWindowCountdownNode) {
-                        pipWindowCountdownNode.textContent = finishedText;
-                    }
-                } catch (e) {
-                    pipWindowCountdownNode = null;
-                    pipWindowRef = null;
-                }
+            if (pipWindowRef && typeof pipWindowRef.setCountdownText === 'function') {
+                try { pipWindowRef.setCountdownText(finishedText); } catch (e) {}
             } else if (pipWindowCountdownNode) {
-                try { pipWindowCountdownNode.textContent = finishedText; } catch (e) { pipWindowCountdownNode = null; }
+                try { pipWindowCountdownNode.textContent = finishedText; } catch (e) {}
             }
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-                countdownInterval = null;
-                window.countdownInterval = null;
+            // keep running but show elapsed time as negative (how long since finished)
+            // compute elapsed seconds
+            let elapsed = Math.floor((now - currentTargetDate) / 1000);
+            const h = Math.floor(elapsed / 3600);
+            elapsed %= 3600;
+            const m = Math.floor(elapsed / 60);
+            const s = elapsed % 60;
+            const elapsedText = `vor ${h > 0 ? h + 'h ' : ''}${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+            if (activeCountdownNode) activeCountdownNode.textContent = elapsedText;
+            if (pipWindowRef && typeof pipWindowRef.setCountdownText === 'function') {
+                try { pipWindowRef.setCountdownText(elapsedText); } catch (e) {}
+            } else if (pipWindowCountdownNode) {
+                try { pipWindowCountdownNode.textContent = elapsedText; } catch (e) {}
             }
             return;
         }
-        const h = Math.floor(diff / 3600);
-        diff %= 3600;
-        const m = Math.floor(diff / 60);
-        const s = diff % 60;
+
+        const h = Math.floor(diffSec / 3600);
+        diffSec %= 3600;
+        const m = Math.floor(diffSec / 60);
+        const s = diffSec % 60;
         const text = (h > 0 ? `${h}h ` : "") + `${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
 
-        if (activeCountdownNode) {
-            activeCountdownNode.textContent = text;
-        }
-        if (pipWindowRef) {
-            try {
-                if (typeof pipWindowRef.setCountdownText === 'function') {
-                    pipWindowRef.setCountdownText(text);
-                } else if (pipWindowCountdownNode) {
-                    pipWindowCountdownNode.textContent = text;
-                }
-            } catch (e) {
-                pipWindowCountdownNode = null;
-                pipWindowRef = null;
-            }
+        if (activeCountdownNode) activeCountdownNode.textContent = text;
+        if (pipWindowRef && typeof pipWindowRef.setCountdownText === 'function') {
+            try { pipWindowRef.setCountdownText(text); } catch (e) { pipWindowRef = null; }
         } else if (pipWindowCountdownNode) {
-            try {
-                pipWindowCountdownNode.textContent = text;
-            } catch (e) {
-                pipWindowCountdownNode = null;
-            }
+            try { pipWindowCountdownNode.textContent = text; } catch (e) { pipWindowCountdownNode = null; }
         }
     }
+
+    // shift target by minutes (positive or negative)
+    function shiftTargetBy(minutes) {
+        if (!currentTargetDate) return;
+        currentTargetDate = new Date(currentTargetDate.getTime() + minutes * 60 * 1000);
+        // update label to reflect changed target (optional)
+        updateTargetDisplay();
+        updateCountdown();
+    }
+
+    // hook shift buttons
+    const shiftBackBtn = document.getElementById('shift-back');
+    const shiftFwdBtn = document.getElementById('shift-forward');
+    if (shiftBackBtn) shiftBackBtn.addEventListener('click', () => shiftTargetBy(-15));
+    if (shiftFwdBtn) shiftFwdBtn.addEventListener('click', () => shiftTargetBy(15));
 
     // Initiales Rendern der Buttons mit Markierung
     renderButtons();
