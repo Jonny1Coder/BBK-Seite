@@ -77,6 +77,17 @@ function renderTabular(tabular){
 
     tabular.matrix.forEach((row, r) => {
         let tr = document.createElement("tr")
+        // Add drag and drop attributes and listeners
+        tr.draggable = true
+        tr.dataset.rowIndex = r
+        
+        tr.addEventListener('dragstart', handleDragStart)
+        tr.addEventListener('dragend', handleDragEnd)
+        tr.addEventListener('dragover', handleDragOver)
+        tr.addEventListener('drop', handleDrop)
+        tr.addEventListener('dragenter', handleDragEnter)
+        tr.addEventListener('dragleave', handleDragLeave)
+        
         row.forEach((cell, c) => {
             let cellElem = template.content.cloneNode(true);
             let subcellElems = cellElem.querySelectorAll("*");
@@ -95,8 +106,9 @@ function renderTabular(tabular){
         });
         table.appendChild(tr);
     });
+
+    // Add result column (existing code)
     let resultTemplate = document.getElementById("tabular-result-cell");
-    //Result Column
     tabular.matrix.forEach((_, r) => {
         let cellElem = resultTemplate.content.cloneNode(true);
         let subcellElems = cellElem.querySelectorAll("*");
@@ -117,5 +129,51 @@ function renderTabular(tabular){
         table.rows[r].appendChild(cellElem);
     });
     container.appendChild(table);
+}
 
+// Drag and drop handlers
+let draggedRow = null;
+
+function handleDragStart(e) {
+    draggedRow = this;
+    this.classList.add('dragging');
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    draggedRow = null;
+}
+
+function handleDragOver(e) {
+    e.preventDefault(); // Necessary to allow dropping
+}
+
+function handleDragEnter(e) {
+    e.preventDefault();
+    if (this !== draggedRow) {
+        this.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    
+    if (draggedRow && this !== draggedRow) {
+        const sourceIndex = parseInt(draggedRow.dataset.rowIndex);
+        const targetIndex = parseInt(this.dataset.rowIndex);
+        
+        // Get the tabular object (assuming it's accessible via the debugGetTabular function)
+        const tabular = debugGetTabular();
+        
+        // Swap the rows using the existing swapRows function
+        swapRows(tabular, sourceIndex, targetIndex);
+        
+        // Re-render the table
+        renderTabular(tabular);
+    }
 }
