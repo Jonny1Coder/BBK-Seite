@@ -16,7 +16,20 @@
         <input id="cell-input-" type="number" class="matrix-input" value="0" step="any">
     </td>
 </template>
+<template id="tabular-result-cell">
+    <th>
+        <label for="cell-result-input-"></label>
+        <input id="cell-result-input-" type="number" class="result-input" value="0" step="any">
+    </th>
+</template>
+
 <h1>GaussJordan</h1>
+<div id="tabular-size-input" class="card">
+    <label for="rows-input">Zeilen:</label>
+    <input type="number" id="rows-input" value="3" min="1" max="10">
+    <label for="cols-input">Spalten:</label>
+    <input type="number" id="cols-input" value="3" min="1" max="10">
+</div>
 <div id="tabular-container">
 
 </div>

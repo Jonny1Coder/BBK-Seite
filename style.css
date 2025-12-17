@@ -253,3 +253,9 @@ button#pip-btn{
     border: none;
     background: none;
 }
+
+.matrix-input{
+}
+.result-input{
+    font-weight: bolder;
+}
