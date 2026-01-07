@@ -255,7 +255,56 @@ button#pip-btn{
 }
 
 .matrix-input{
+    height: 3em;
 }
 .result-input{
     font-weight: bolder;
+}
+.tabular-table tr {
+    position: relative;
+}
+
+.drop-indicator {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #2196F3;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.drop-indicator.drop-before {
+    top: 0;
+    transform: translateY(-50%);
+}
+
+.drop-indicator.drop-after {
+    bottom: 0;
+    transform: translateY(50%);
+}
+
+.drop-indicator.active {
+    opacity: 1;
+}
+
+/* Remove old drag-over styles */
+.drag-over-top, .drag-over-bottom {
+    display: none;
+}
+
+.dragging {
+    opacity: 0.5;
+    cursor: move;
+}
+
+.drag-handle {
+    cursor: grab;
+    height: 100%;
+    width: 20px;
+}
+.drag-handle:active {
+    cursor: grabbing;
 }
