@@ -163,6 +163,9 @@ button:hover {
     font-weight: 600;
     color: #666;
 }
+.hidden {
+    display: none;
+}
 
 .exam-expired {
     opacity: 0.65;
