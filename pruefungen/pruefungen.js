@@ -10,7 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formatDateISO(iso) {
+        if (!iso) return '';
         const d = new Date(iso);
+        if (isNaN(d)) return '';
         return d.toLocaleString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
     }
 
@@ -32,19 +34,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const mainCountdown = document.createElement('div');
         mainCountdown.className = 'exam-countdown exam-countdown-main';
         mainCountdown.textContent = 'Lädt...';
-        mainCountdown.dataset.iso = exam.termin;
+        mainCountdown.dataset.iso = exam.termin || '';
         mainCountdown.dataset.type = 'termin';
 
-        // Nachschreibtermin Label + Countdown
+        // Nachschreibtermin Label + Countdown (immer erzeugen, aber ggf. verstecken)
         const nachLabel = document.createElement('div');
-        nachLabel.textContent = `Nachschreibtermin: ${formatDateISO(exam.nachschreibtermin)}`;
         nachLabel.className = 'exam-nach-label';
+        const nachText = formatDateISO(exam.nachschreibtermin);
+        nachLabel.textContent = nachText ? `Nachschreibtermin: ${nachText}` : '';
 
         const nachCountdown = document.createElement('div');
         nachCountdown.className = 'exam-countdown exam-countdown-nach';
-        nachCountdown.textContent = 'Lädt...';
-        nachCountdown.dataset.iso = exam.nachschreibtermin;
+        nachCountdown.textContent = nachText ? 'Lädt...' : '';
+        nachCountdown.dataset.iso = exam.nachschreibtermin || '';
         nachCountdown.dataset.type = 'nach';
+
+        // Falls kein Nachschreibtermin vorhanden ist: nur das Datumselement und Countdown verbergen, Container bleibt sichtbar
+        if (!exam.nachschreibtermin) {
+            nachLabel.classList.add('hidden');
+            nachCountdown.classList.add('hidden');
+            // Zusätzlich leeren wir den Inhalt (Sicherheit)
+            nachLabel.textContent = '';
+            nachCountdown.textContent = '';
+        }
 
         // Aufbau der Karte: Titel, Haupttermin+Countdown, Nachschreibtermin+Countdown
         container.appendChild(title);
@@ -68,11 +80,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateCountdownElement(elem) {
         const iso = elem.dataset.iso;
         if (!iso) {
-            elem.textContent = '-';
+            elem.textContent = '';
             return;
         }
         const target = new Date(iso);
         const now = new Date();
+        if (isNaN(target)) {
+            elem.textContent = '';
+            return;
+        }
         // Wenn Ziel in der Vergangenheit liegt: zeige die Zeit seit dem Ereignis (laufend)
         if (now >= target) {
             let diff = Math.floor((now - target) / 1000); // vergangene Sekunden
@@ -102,16 +118,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const countdownElems = [];
 
         const now = new Date();
-        // Annahme: Eine Prüfung gilt als vollständig vorbei, wenn sowohl Haupttermin als auch Nachschreibtermin in der Vergangenheit liegen
+        // Annahme: Eine Prüfung gilt als vollständig vorbei, wenn sowohl Haupttermin als auch (falls vorhanden) Nachschreibtermin in der Vergangenheit liegen
         const upcoming = [];
         const fullyExpired = [];
         exams.forEach(exam => {
-            const main = new Date(exam.termin);
-            const nach = new Date(exam.nachschreibtermin);
-            if (main <= now && nach <= now) {
-                fullyExpired.push(exam);
-            } else {
+            const main = exam.termin ? new Date(exam.termin) : null;
+            const nach = exam.nachschreibtermin ? new Date(exam.nachschreibtermin) : null;
+
+            if (!main || isNaN(main)) {
                 upcoming.push(exam);
+                return;
+            }
+
+            if (nach) {
+                if (main <= now && nach <= now) {
+                    fullyExpired.push(exam);
+                } else {
+                    upcoming.push(exam);
+                }
+            } else {
+                if (main <= now) {
+                    fullyExpired.push(exam);
+                } else {
+                    upcoming.push(exam);
+                }
             }
         });
 
@@ -119,7 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
         upcoming.forEach((exam) => {
             const {container, mainCountdown, nachCountdown} = createExamCard(exam);
             list.appendChild(container);
-            countdownElems.push(mainCountdown, nachCountdown);
+            if (mainCountdown) countdownElems.push(mainCountdown);
+            if (exam.nachschreibtermin && nachCountdown) countdownElems.push(nachCountdown);
         });
 
         // Danach vollständig vergangene Prüfungen rendern (ausgegraut, nach unten)
@@ -130,7 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
             container.dataset.fullyExpired = 'true';
 
             list.appendChild(container);
-            countdownElems.push(mainCountdown, nachCountdown);
+            if (mainCountdown) countdownElems.push(mainCountdown);
+            if (exam.nachschreibtermin && nachCountdown) countdownElems.push(nachCountdown);
         });
 
         function tick() {
