@@ -1,12 +1,13 @@
 {
   "exams": [
-    { "fach": "DB", "termin": "2026-05-18T09:00:00", "nachschreibtermin": "2026-06-15T09:00:00" },
-    { "fach": "SOW", "termin": "2026-05-21T09:00:00", "nachschreibtermin": "2026-06-17T09:00:00" },
-    { "fach": "Englisch", "termin": "2026-05-27T09:00:00", "nachschreibtermin": "2026-06-11T09:00:00" },
-    { "fach": "Deutsch", "termin": "2026-05-29T09:00:00", "nachschreibtermin": "2026-06-12T09:00:00" },
-    { "fach": "BEN", "termin": "2026-06-01T09:00:00", "nachschreibtermin": "2026-06-17T09:00:00" },
-    { "fach": "Mathe", "termin": "2026-06-03T09:00:00", "nachschreibtermin": "2026-06-16T09:00:00" },
-    { "fach": "Praktische Prüfung", "termin": "2026-06-10T09:00:00", "nachschreibtermin": "2026-06-17T09:00:00" },
+    { "fach": "Bekanntgabe der Vornote & Letzter Schultag", "termin": "2026-05-11T14:40:00" },
+    { "fach": "DB", "termin": "2026-05-18T07:55:00", "nachschreibtermin": "2026-06-15T07:55:00" },
+    { "fach": "SOW", "termin": "2026-05-21T07:55:00", "nachschreibtermin": "2026-06-17T07:55:00" },
+    { "fach": "Englisch", "termin": "2026-05-27T07:55:00", "nachschreibtermin": "2026-06-11T07:55:00" },
+    { "fach": "Deutsch", "termin": "2026-05-29T07:55:00", "nachschreibtermin": "2026-06-12T07:55:00" },
+    { "fach": "BEN", "termin": "2026-06-01T07:55:00", "nachschreibtermin": "2026-06-17T07:55:00" },
+    { "fach": "Mathe", "termin": "2026-06-03T07:55:00", "nachschreibtermin": "2026-06-16T07:55:00" },
+    { "fach": "Praktische Prüfung", "termin": "2026-06-10T07:55:00", "nachschreibtermin": "2026-06-17T07:55:00" },
     { "fach": "Abschluss Feier", "termin": "2026-07-19T18:00:00"}
   ]
 }
