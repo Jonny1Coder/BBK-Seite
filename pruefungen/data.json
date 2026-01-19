@@ -1,5 +1,6 @@
 {
   "exams": [
+    { "fach": "Bekanntgabe der Vornote & Letzter Schultag", "termin": "2026-05-11T14:40:00" },
     { "fach": "DB", "termin": "2026-05-18T09:00:00", "nachschreibtermin": "2026-06-15T09:00:00" },
     { "fach": "SOW", "termin": "2026-05-21T09:00:00", "nachschreibtermin": "2026-06-17T09:00:00" },
     { "fach": "Englisch", "termin": "2026-05-27T09:00:00", "nachschreibtermin": "2026-06-11T09:00:00" },
