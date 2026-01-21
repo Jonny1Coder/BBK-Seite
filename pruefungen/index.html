@@ -14,5 +14,13 @@
   <div id="exams-list" class="button-grid"></div>
 
   <script src="./pruefungen.js"></script>
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => console.log('Service Worker registered'))
+        .catch(error => console.log('Service Worker registration failed:', error));
+    }
+  </script>
 </body>
 </html>
