@@ -632,7 +632,95 @@ class GaussJordanCalculator {
       html += '</div>';
     } else if (isRREF && leadingOnes.length < this.matrix.cols - 1) {
       html += '<div class="infinite-solutions">∞ Unendlich viele Lösungen (Freiheitsgrade)</div>';
-      html += '<p>Das System hat freie Variablen.</p>';
+      
+      // Determine which variables are free
+      const numVariables = this.matrix.cols - 1;
+      const leadingCols = leadingOnes.map(lo => lo.col);
+      const freeVars = [];
+      const dependentVars = [];
+      
+      for (let j = 0; j < numVariables; j++) {
+        if (leadingCols.includes(j)) {
+          dependentVars.push(j);
+        } else {
+          freeVars.push(j);
+        }
+      }
+      
+      // Display free variables
+      if (freeVars.length > 0) {
+        html += '<div class="solution-conditions">';
+        html += '<p><strong>Freie Variablen:</strong> ';
+        html += freeVars.map(idx => `x<sub>${idx + 1}</sub>`).join(', ');
+        html += '</p>';
+        
+        // Display parametric solution
+        html += '<p><strong>Ergebnisbedingungen:</strong></p>';
+        html += '<div class="solution-vector">';
+        
+        for (let i = 0; i < leadingOnes.length; i++) {
+          const leadingOne = leadingOnes[i];
+          const row = leadingOne.row;
+          const col = leadingOne.col;
+          
+          // Build the equation for this variable
+          let equation = `x<sub>${col + 1}</sub> = `;
+          const constantTerm = this.matrix.getValue(row, this.matrix.cols - 1);
+          
+          // Collect terms for free variables
+          let terms = [];
+          
+          // Add constant term
+          if (!constantTerm.isZero()) {
+            terms.push(constantTerm.toString());
+          }
+          
+          // Add terms for free variables
+          for (let j = 0; j < numVariables; j++) {
+            if (freeVars.includes(j)) {
+              const coeff = this.matrix.getValue(row, j);
+              if (!coeff.isZero()) {
+                const coeffNeg = coeff.negate();
+                if (coeffNeg.num === coeffNeg.den) {
+                  // Coefficient is 1
+                  terms.push(`+ x<sub>${j + 1}</sub>`);
+                } else if (coeffNeg.num === -coeffNeg.den) {
+                  // Coefficient is -1
+                  terms.push(`- x<sub>${j + 1}</sub>`);
+                } else {
+                  // General coefficient
+                  if (coeffNeg.num >= 0) {
+                    terms.push(`+ ${coeffNeg.toString()}·x<sub>${j + 1}</sub>`);
+                  } else {
+                    terms.push(`- ${coeffNeg.negate().toString()}·x<sub>${j + 1}</sub>`);
+                  }
+                }
+              }
+            }
+          }
+          
+          if (terms.length === 0) {
+            equation += '0';
+          } else {
+            // Join terms with space and clean up formatting
+            equation = equation + terms.join(' ');
+            // Remove leading + sign if constant term is 0
+            equation = equation.replace(/= \+ /g, '= ');
+          }
+          
+          html += equation + '<br>';
+        }
+        
+        // Show free variables can take any value
+        for (const freeIdx of freeVars) {
+          html += `x<sub>${freeIdx + 1}</sub> ∈ ℝ (beliebig)<br>`;
+        }
+        
+        html += '</div>';
+        html += '</div>';
+      } else {
+        html += '<p>Das System hat freie Variablen.</p>';
+      }
     } else {
       html += '<p>Matrix ist noch nicht in reduzierter Zeilenstufenform.</p>';
       html += '<p>Verwenden Sie den Auto-Modus oder führen Sie weitere Operationen durch.</p>';
