@@ -95,7 +95,8 @@
         
         // Listen for system theme changes when in auto mode
         if (window.matchMedia) {
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            darkModeQuery.addEventListener('change', (e) => {
                 const currentMode = getStoredTheme();
                 if (currentMode === THEMES.AUTO) {
                     applyTheme(e.matches ? THEMES.DARK : THEMES.LIGHT);
@@ -111,7 +112,7 @@
         
         const button = document.createElement('button');
         button.className = 'theme-toggle-btn';
-        button.title = 'Thema umschalten (Auto / Hell / Dunkel)';
+        button.title = 'Thema umschalten: Auto → Hell → Dunkel → Auto';
         button.setAttribute('aria-label', 'Thema umschalten');
         
         const icon = document.createElement('span');

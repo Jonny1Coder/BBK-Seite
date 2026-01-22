@@ -138,7 +138,7 @@ button:hover {
     color: var(--text-back-button);
     border: 1px solid var(--border-back-button);
 }
-.current-lesson {
+button.current-lesson {
     background: var(--bg-current-lesson) !important;
     border-color: var(--border-current-lesson) !important;
     color: var(--text-primary) !important;
