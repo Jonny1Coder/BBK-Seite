@@ -680,19 +680,23 @@ class GaussJordanCalculator {
             if (freeVars.includes(j)) {
               const coeff = this.matrix.getValue(row, j);
               if (!coeff.isZero()) {
+                // Negate coefficient because we're moving it to the right side
                 const coeffNeg = coeff.negate();
-                if (coeffNeg.num === coeffNeg.den) {
+                
+                if (coeffNeg.num === 1 && coeffNeg.den === 1) {
                   // Coefficient is 1
-                  terms.push(`+ x<sub>${j + 1}</sub>`);
-                } else if (coeffNeg.num === -coeffNeg.den) {
+                  terms.push({ sign: '+', text: `x<sub>${j + 1}</sub>` });
+                } else if (coeffNeg.num === -1 && coeffNeg.den === 1) {
                   // Coefficient is -1
-                  terms.push(`- x<sub>${j + 1}</sub>`);
+                  terms.push({ sign: '-', text: `x<sub>${j + 1}</sub>` });
                 } else {
                   // General coefficient
                   if (coeffNeg.num >= 0) {
-                    terms.push(`+ ${coeffNeg.toString()}·x<sub>${j + 1}</sub>`);
+                    terms.push({ sign: '+', text: `${coeffNeg.toString()}·x<sub>${j + 1}</sub>` });
                   } else {
-                    terms.push(`- ${coeffNeg.negate().toString()}·x<sub>${j + 1}</sub>`);
+                    // Negative coefficient: split sign and value
+                    const absCoeff = new Fraction(-coeffNeg.num, coeffNeg.den);
+                    terms.push({ sign: '-', text: `${absCoeff.toString()}·x<sub>${j + 1}</sub>` });
                   }
                 }
               }
@@ -702,10 +706,20 @@ class GaussJordanCalculator {
           if (terms.length === 0) {
             equation += '0';
           } else {
-            // Join terms with space and clean up formatting
-            equation = equation + terms.join(' ');
-            // Remove leading + sign if constant term is 0
-            equation = equation.replace(/= \+ /g, '= ');
+            // Build equation with proper formatting
+            for (let i = 0; i < terms.length; i++) {
+              const term = terms[i];
+              if (i === 0) {
+                // First term: only add sign if it's minus or constant is zero
+                if (constantTerm.isZero()) {
+                  equation += term.sign === '-' ? `- ${term.text}` : term.text;
+                } else {
+                  equation += ` ${term.sign} ${term.text}`;
+                }
+              } else {
+                equation += ` ${term.sign} ${term.text}`;
+              }
+            }
           }
           
           html += equation + '<br>';
