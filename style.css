@@ -1,12 +1,125 @@
+/* CSS Variables for Theme Colors */
+:root {
+    /* Light Theme (Default) */
+    --bg-primary: #f9f9f9;
+    --bg-card: #ffffff;
+    --bg-button: #fff;
+    --bg-button-hover: #d0e7ff;
+    --bg-button-link: #76ff80;
+    --bg-button-back: #fbe3e3;
+    --bg-button-home: #e8e8e8;
+    --bg-schoolend: #fff7cc;
+    --bg-exam-card: #fff;
+    --bg-exam-expired: #f5f5f5;
+    --bg-danger-alert: rgba(255, 0, 0, 0.62);
+    --bg-current-lesson: #66ffad;
+    
+    --text-primary: #000000;
+    --text-secondary: #666666;
+    --text-countdown: #004085;
+    --text-stunde-target: #0b5394;
+    --text-schoolend: #b08d00;
+    --text-exam-main: #b08d00;
+    --text-danger-alert: #000000;
+    --text-back-button: #a00;
+    --text-current-lesson: #000000;
+    
+    --border-primary: #aaa;
+    --border-button: #aaa;
+    --border-card: #ccc;
+    --border-back-button: #e3a1a1;
+    --border-schoolend: #ffe599;
+    --border-danger-alert: #aa0000;
+    --border-current-lesson: #59dd97;
+    
+    --shadow-primary: rgba(0, 0, 0, 0.5);
+    --shadow-current-lesson: #66ffad;
+    
+    /* Gauss-Jordan specific colors */
+    --color-success: #4CAF50;
+    --color-success-hover: #45a049;
+    --color-warning: #ff9800;
+    --color-error: #d32f2f;
+    --color-info: #1976d2;
+    --bg-success: #d4edda;
+    --text-success: #155724;
+    --border-success: #c3e6cb;
+    --bg-error: #f8d7da;
+    --text-error: #721c24;
+    --border-error: #f5c6cb;
+    --bg-info: #d1ecf1;
+    --text-info: #0c5460;
+    --border-info: #bee5eb;
+    --bg-warning: rgba(255, 152, 0, 0.1);
+    --bg-highlight: rgba(255, 235, 59, 0.5);
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-card: #2a2a2a;
+    --bg-button: #3a3a3a;
+    --bg-button-hover: #4a5a6a;
+    --bg-button-link: #4d994d;
+    --bg-button-back: #4a3030;
+    --bg-button-home: #3a3a3a;
+    --bg-schoolend: #4a4520;
+    --bg-exam-card: #2a2a2a;
+    --bg-exam-expired: #252525;
+    --bg-danger-alert: rgba(150, 0, 0, 0.62);
+    --bg-current-lesson: #2d6645;
+    
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --text-countdown: #6bb6ff;
+    --text-stunde-target: #7eb8e8;
+    --text-schoolend: #d4b700;
+    --text-exam-main: #d4b700;
+    --text-danger-alert: #ffffff;
+    --text-back-button: #ff6666;
+    --text-current-lesson: #ffffff;
+    
+    --border-primary: #555;
+    --border-button: #555;
+    --border-card: #444;
+    --border-back-button: #663333;
+    --border-schoolend: #8a7520;
+    --border-danger-alert: #992222;
+    --border-current-lesson: #3a6650;
+    
+    --shadow-primary: rgba(0, 0, 0, 0.8);
+    --shadow-current-lesson: #2d6645;
+    
+    /* Gauss-Jordan specific colors for dark mode */
+    --color-success: #66bb6a;
+    --color-success-hover: #5cb85c;
+    --color-warning: #ffa726;
+    --color-error: #ef5350;
+    --color-info: #42a5f5;
+    --bg-success: #1b4d1b;
+    --text-success: #a8e6a8;
+    --border-success: #2d6b2d;
+    --bg-error: #4d1a1a;
+    --text-error: #ffb3b3;
+    --border-error: #6b2d2d;
+    --bg-info: #1a3d4d;
+    --text-info: #a8d8e6;
+    --border-info: #2d5b6b;
+    --bg-warning: rgba(255, 167, 38, 0.15);
+    --bg-highlight: rgba(255, 235, 59, 0.3);
+}
+
 body {
     font-family: Arial, sans-serif;
-    background: #f9f9f9;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     min-height: 100vh;
     margin: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 main{
     margin-left: 15em;
@@ -15,9 +128,11 @@ main{
 }
 .card{
     padding: 2em;
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+    background: var(--bg-card);
+    box-shadow: 4px 4px 10px var(--shadow-primary);
     border-radius: 2em;
     margin-bottom: 2em;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 h1 {
     margin-top: 40px;
@@ -32,19 +147,20 @@ button {
     padding: 15px 25px;
     font-size: 1.3rem;
     border-radius: 2em;
-    border: 1px solid #aaa;
-    background: #fff;
+    border: 1px solid var(--border-button);
+    background: var(--bg-button);
+    color: var(--text-primary);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s;
 }
 button:hover {
-    background: #d0e7ff;
+    background: var(--bg-button-hover);
 }
 .countdown {
     font-size: 2.5rem;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
-    color: #004085;
+    color: var(--text-countdown);
 }
 
 /* Neues Element für die Ziel-Uhrzeit der Stunde */
@@ -52,41 +168,42 @@ button:hover {
     margin-top: 6px;
     font-size: 1.25rem;
     font-weight: 700;
-    color: #0b5394; /* dunkelblau */
+    color: var(--text-stunde-target);
 }
 .back-btn {
     margin-top: 30px;
-    background: #fbe3e3;
-    color: #a00;
-    border: 1px solid #e3a1a1;
+    background: var(--bg-button-back);
+    color: var(--text-back-button);
+    border: 1px solid var(--border-back-button);
 }
-.current-lesson {
-    background: #66ffad !important;
-    border-color: #59dd97 !important;
-    color: #000000 !important;
-    box-shadow: 0 0 8px #66ffad;
+button.current-lesson {
+    background: var(--bg-current-lesson) !important;
+    border-color: var(--border-current-lesson) !important;
+    color: var(--text-current-lesson) !important;
+    box-shadow: 0 0 8px var(--shadow-current-lesson);
 }
 .schoolend-container {
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 4px 4px 10px var(--shadow-primary);
     margin-top: 25px;
     margin-bottom: 10px;
     padding: 16px 25px;
-    background: #fff7cc;
-    border: 1.5px solid #ffe599;
+    background: var(--bg-schoolend);
+    border: 1.5px solid var(--border-schoolend);
     border-radius: 1em;
     display: flex;
     flex-direction: column;
     align-items: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .schoolend-title {
     font-size: 1.25rem;
     font-weight: bold;
     margin-bottom: 7px;
-    color: #b08d00;
+    color: var(--text-schoolend);
 }
 .schoolend-countdown {
     font-size: 1.6rem;
-    color: #b08d00;
+    color: var(--text-schoolend);
     font-family: "Consolas", "Fira Mono", monospace;
     letter-spacing: 1.5px;
 }
@@ -96,20 +213,47 @@ button:hover {
     left: 15px;
     padding: 10px 15px;
     font-size: 1.1rem;
-    border: 1px solid #aaa;
-    background: #e8e8e8;
+    border: 1px solid var(--border-button);
+    background: var(--bg-button-home);
     cursor: pointer;
     transition: background 0.2s;
     z-index: 1000;
 }
 .home-btn:hover {
-    background: #d0e7ff;
+    background: var(--bg-button-hover);
 }
 .text-bold {
     font-weight: bold;
 }
 .link-btn{
-    background-color: #76ff80;
+    background-color: var(--bg-button-link);
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    padding: 10px;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    border: 1px solid var(--border-button);
+    background: var(--bg-button-home);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    z-index: 1000;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.theme-toggle-btn:hover {
+    background: var(--bg-button-hover);
+    transform: scale(1.1);
+}
+.theme-toggle-btn .material-icons {
+    font-size: 28px;
 }
 
 
@@ -120,9 +264,9 @@ button:hover {
 }
 .exam-card {
     padding: 12px 16px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-card);
     border-radius: 12px;
-    background: #fff;
+    background: var(--bg-exam-card);
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     align-items: start;
@@ -130,6 +274,7 @@ button:hover {
     width: 100%;
     box-sizing: border-box;
     margin-bottom: 12px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .exam-card > .exam-title {
     grid-column: 1 / 2;
@@ -156,12 +301,12 @@ button:hover {
 .exam-countdown-main {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #b08d00;
+    color: var(--text-exam-main);
 }
 .exam-countdown-nach {
     font-size: 0.95rem;
     font-weight: 600;
-    color: #666;
+    color: var(--text-secondary);
 }
 .hidden {
     display: none;
@@ -170,17 +315,16 @@ button:hover {
 .exam-expired {
     opacity: 0.65;
     filter: grayscale(40%);
-    background: #f5f5f5;
+    background: var(--bg-exam-expired);
 }
 .danger-alert{
-    background-color: rgba(255, 0, 0, 0.62);
+    background-color: var(--bg-danger-alert);
     border-style: solid;
-    border-color: #aa0000;
+    border-color: var(--border-danger-alert);
     border-radius: 1em;
     padding: 1em;
-    /* Ensure text has sufficient contrast on the semi-transparent red background.
-       Dark text color improves readability and meets WCAG AA standards. */
-    color: #000000;
+    color: var(--text-danger-alert);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 @media (max-width: 700px) {
@@ -216,7 +360,7 @@ button:hover {
 }
 @media (max-width: 1000px) {
     body {
-        font-size: 2.5rem;
+        font-size: 1rem;
         padding: 1em;
     }
     main {
@@ -257,6 +401,17 @@ button:hover {
         padding: 10px 0;
         width: 100%;
         box-sizing: border-box;
+    }
+    /* Theme toggle button mobile adjustments */
+    .theme-toggle-btn {
+        width: 45px;
+        height: 45px;
+        top: 10px;
+        right: 10px;
+        padding: 8px;
+    }
+    .theme-toggle-btn .material-icons {
+        font-size: 24px;
     }
 }
 svg{
