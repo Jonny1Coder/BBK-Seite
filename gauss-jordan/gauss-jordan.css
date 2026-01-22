@@ -237,6 +237,14 @@
   font-weight: 500;
 }
 
+.solution-display .solution-conditions {
+  margin-top: 15px;
+}
+
+.solution-display .solution-conditions p {
+  margin: 8px 0;
+}
+
 .import-export {
   margin-top: 20px;
   padding-top: 20px;
