@@ -19,7 +19,11 @@ class Fraction {
   }
   
   gcd(a, b) {
-    return b === 0 ? a : this.gcd(b, a % b);
+    // Iterative GCD to avoid stack overflow
+    while (b !== 0) {
+      [a, b] = [b, a % b];
+    }
+    return a;
   }
   
   add(other) {
@@ -77,11 +81,14 @@ class Fraction {
       throw new Error('Ungültige Zahl');
     }
     
-    // Convert decimal to fraction
+    // Convert decimal to fraction using string parsing to avoid floating point errors
     const decimalPlaces = (str.split('.')[1] || '').length;
     if (decimalPlaces > 0) {
       const multiplier = Math.pow(10, decimalPlaces);
-      return new Fraction(Math.round(num * multiplier), multiplier);
+      // Use string manipulation to avoid floating point precision issues
+      const numeratorStr = str.replace('.', '');
+      const numerator = parseInt(numeratorStr, 10);
+      return new Fraction(numerator, multiplier);
     }
     
     return new Fraction(num, 1);
@@ -361,6 +368,7 @@ class GaussJordanCalculator {
     const operations = [];
     
     // Match patterns like: 3*II, -IV/6, I, +2*III
+    // Capture groups: (1) sign, (2) coefficient, (3) mult symbol, (4) Roman numeral
     const termRegex = /([+-]?)(\d+\/\d+|\d*\.?\d+)?(\*?)([IVX]+)/g;
     let match;
     
@@ -390,7 +398,7 @@ class GaussJordanCalculator {
       const { targetRow, operations } = this.parseOperation(operationStr);
       
       // Create a temporary result row
-      const result = Array(this.matrix.cols).fill(null).map(() => new Fraction(0));
+      const result = Array.from({length: this.matrix.cols}, () => new Fraction(0));
       
       // Sum all operations
       for (const op of operations) {
