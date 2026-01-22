@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Gauss-Jordan Rechner</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="gauss-jordan.css">
+  <link rel="icon" type="image/png" href="https://www.bbk.schule/typo3conf/ext/mj_bk/Resources/Public/Icons/favicon.ico">
+</head>
+<body>
+  <button class="home-btn" onclick="window.location.href='../index.html'">🏠 Home</button>
+  <h1>Gauss-Jordan Rechner</h1>
+  
+  <div class="card">
+    <h2>Matrix-Eingabe</h2>
+    <div class="matrix-controls">
+      <label>Zeilen: 
+        <input type="number" id="rows-input" min="1" max="10" value="3">
+      </label>
+      <label>Spalten: 
+        <input type="number" id="cols-input" min="2" max="15" value="4">
+      </label>
+      <button id="create-matrix-btn">Matrix erstellen</button>
+      <button id="clear-matrix-btn">Zurücksetzen</button>
+    </div>
+    
+    <div id="matrix-container" class="matrix-container"></div>
+    
+    <div class="import-export">
+      <h3>Import/Export</h3>
+      <button id="copy-matrix-btn">Matrix kopieren</button>
+      <button id="paste-matrix-btn">Matrix einfügen</button>
+      <button id="export-text-btn">Als Text exportieren</button>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2>Operationen</h2>
+    <div class="operation-controls">
+      <div class="operation-input-group">
+        <label for="operation-input">Zeilenoperation eingeben (z.B. "I = I + 3*II" oder "II = -IV/6"):</label>
+        <input type="text" id="operation-input" placeholder="I = I + 3*II">
+        <button id="apply-operation-btn">Anwenden</button>
+      </div>
+      
+      <div class="quick-operations">
+        <h3>Schnelloperationen</h3>
+        <button id="swap-rows-btn">Zeilen tauschen</button>
+        <button id="multiply-row-btn">Zeile multiplizieren</button>
+        <button id="add-rows-btn">Zeile addieren</button>
+      </div>
+      
+      <div class="auto-solve">
+        <h3>Automatisches Lösen</h3>
+        <button id="auto-solve-btn" class="primary-btn">Schritt-für-Schritt lösen</button>
+        <button id="solve-all-btn">Komplett lösen</button>
+        <button id="next-step-btn" disabled>Nächster Schritt</button>
+        <button id="pause-btn" disabled>Pausieren</button>
+      </div>
+    </div>
+    
+    <div id="operation-feedback" class="operation-feedback"></div>
+  </div>
+  
+  <div class="card">
+    <h2>Historie</h2>
+    <div class="history-controls">
+      <button id="undo-btn" disabled>↶ Rückgängig (Ctrl+Z)</button>
+      <button id="redo-btn" disabled>↷ Wiederholen (Ctrl+Y)</button>
+      <button id="clear-history-btn">Historie löschen</button>
+    </div>
+    <div id="history-display" class="history-display"></div>
+  </div>
+  
+  <div class="card">
+    <h2>Ergebnis</h2>
+    <div id="solution-display" class="solution-display">
+      <p>Führen Sie Operationen durch oder nutzen Sie den Auto-Modus, um die Lösung zu sehen.</p>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2>Hilfe</h2>
+    <div class="help-content">
+      <h3>Zeilenoperationen</h3>
+      <ul>
+        <li><strong>Zeilen vertauschen:</strong> Ziehen Sie Zeilen per Drag & Drop</li>
+        <li><strong>Zeile mit Skalar multiplizieren:</strong> I = 3*I oder II = -1/2*II</li>
+        <li><strong>Vielfaches einer Zeile addieren:</strong> I = I + 2*II</li>
+        <li><strong>Kombinierte Operationen:</strong> III = III - 5*I</li>
+      </ul>
+      
+      <h3>Römische Zahlen</h3>
+      <p>Zeilen werden mit römischen Zahlen bezeichnet: I (1), II (2), III (3), IV (4), V (5), usw.</p>
+      
+      <h3>Tastaturkürzel</h3>
+      <ul>
+        <li><strong>Ctrl+Z:</strong> Rückgängig</li>
+        <li><strong>Ctrl+Y:</strong> Wiederholen</li>
+        <li><strong>Enter:</strong> Operation anwenden</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script src="gauss-jordan.js"></script>
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => console.log('Service Worker registered'))
+        .catch(error => console.log('Service Worker registration failed:', error));
+    }
+  </script>
+</body>
+</html>
