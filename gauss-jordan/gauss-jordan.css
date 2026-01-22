@@ -26,6 +26,7 @@
 .matrix-container {
   overflow-x: auto;
   margin: 20px 0;
+  max-height: 25em;
 }
 
 .matrix-table {
