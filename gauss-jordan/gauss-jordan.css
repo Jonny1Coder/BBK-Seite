@@ -1,5 +1,7 @@
 /* Gauss-Jordan Calculator Styles */
-
+.gauss-card {
+  max-width: 90%;
+}
 .matrix-controls {
   display: flex;
   gap: 15px;
@@ -39,7 +41,6 @@
 }
 
 .matrix-table input {
-  width: 100%;
   padding: 8px;
   border: 2px solid #ddd;
   border-radius: 4px;
