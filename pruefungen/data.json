@@ -8,7 +8,7 @@
     { "fach": "BEN", "termin": "2026-06-01T07:55:00", "nachschreibtermin": "2026-06-17T07:55:00" },
     { "fach": "Mathe", "termin": "2026-06-03T07:55:00", "nachschreibtermin": "2026-06-16T07:55:00" },
     { "fach": "Praktische Prüfung", "termin": "2026-06-10T07:55:00", "nachschreibtermin": "2026-06-17T07:55:00" },
-    { "fach": "Zeugnis Noten bekanntgabe", "termin": "2026-06-23T18:00:00"},
+    { "fach": "Zeugnis Notenbekanntgabe", "termin": "2026-06-23T18:00:00"},
     { "fach": "evtl. Mündliche Nachprüfungen", "termin": "2026-06-30T18:00:00"},
     { "fach": "Abschluss Feier", "termin": "2026-07-09T18:00:00"}
   ]
