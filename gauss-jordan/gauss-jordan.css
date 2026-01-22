@@ -272,6 +272,10 @@
   margin-bottom: 10px;
 }
 
+.help-content strong {
+  color: var(--text-primary);
+}
+
 /* Fraction display */
 .fraction {
   display: inline-block;
