@@ -19,7 +19,9 @@
 .matrix-controls input[type="number"] {
   width: 60px;
   padding: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-card);
+  background: var(--bg-button);
+  color: var(--text-primary);
   border-radius: 4px;
 }
 
@@ -42,7 +44,9 @@
 
 .matrix-table input {
   padding: 8px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-card);
+  background: var(--bg-button);
+  color: var(--text-primary);
   border-radius: 4px;
   text-align: center;
   font-size: 1rem;
@@ -61,7 +65,8 @@
   text-align: center;
   vertical-align: middle;
   padding: 8px 12px;
-  background: #f0f0f0;
+  background: var(--bg-button-home);
+  color: var(--text-primary);
   border-radius: 4px;
   cursor: grab;
   user-select: none;
@@ -126,7 +131,9 @@
 
 .operation-input-group input[type="text"] {
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-card);
+  background: var(--bg-button);
+  color: var(--text-primary);
   border-radius: 4px;
   font-size: 1rem;
 }
@@ -179,15 +186,16 @@
 .history-display {
   max-height: 150px;
   overflow-y: auto;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-card);
   border-radius: 4px;
   padding: 10px;
-  background: #fafafa;
+  background: var(--bg-button-home);
+  color: var(--text-primary);
 }
 
 .history-item {
   padding: 5px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-card);
   font-family: monospace;
   font-size: 0.9rem;
 }
@@ -198,8 +206,9 @@
 
 .solution-display {
   padding: 15px;
-  background: #f9f9f9;
-  border: 1px solid #ddd;
+  background: var(--bg-button-home);
+  border: 1px solid var(--border-card);
+  color: var(--text-primary);
   border-radius: 4px;
   min-height: 100px;
 }
@@ -214,7 +223,7 @@
   font-family: monospace;
   margin: 10px 0;
   padding: 10px;
-  background: white;
+  background: var(--bg-card);
   border-left: 3px solid #4CAF50;
 }
 
@@ -231,7 +240,7 @@
 .import-export {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--border-card);
 }
 
 .import-export h3 {
@@ -276,7 +285,7 @@
 
 .fraction .numerator {
   display: block;
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid var(--text-primary);
   padding: 0 3px;
 }
 
