@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bbk-seite-v1';
+const CACHE_NAME = 'bbk-seite-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -10,7 +10,11 @@ const urlsToCache = [
   '/pruefungen/',
   '/pruefungen/index.html',
   '/pruefungen/pruefungen.js',
-  '/pruefungen/data.json'
+  '/pruefungen/data.json',
+  '/gauss-jordan/',
+  '/gauss-jordan/index.html',
+  '/gauss-jordan/gauss-jordan.js',
+  '/gauss-jordan/gauss-jordan.css'
 ];
 
 // Install event - cache all resources
