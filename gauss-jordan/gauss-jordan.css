@@ -55,8 +55,8 @@
 
 .matrix-table input:focus {
   outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+  border-color: var(--color-success);
+  box-shadow: 0 0 5px var(--color-success);
 }
 
 .matrix-table .row-label {
@@ -82,20 +82,20 @@
 }
 
 .matrix-table tr.drag-over {
-  background: rgba(76, 175, 80, 0.1);
+  background: var(--bg-success);
 }
 
 .matrix-table tr.active-row {
-  background: rgba(76, 175, 80, 0.1);
+  background: var(--bg-success);
 }
 
 .matrix-table tr.active-row input {
-  border-color: #4CAF50;
-  background: rgba(76, 175, 80, 0.05);
+  border-color: var(--color-success);
+  background: var(--bg-success);
 }
 
 .matrix-table input.pivot-element {
-  border-color: #ff9800;
+  border-color: var(--color-warning);
   background: rgba(255, 152, 0, 0.1);
   font-weight: bold;
 }
@@ -159,21 +159,21 @@
 }
 
 .operation-feedback.success {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
+  background: var(--bg-success);
+  color: var(--text-success);
+  border: 1px solid var(--border-success);
 }
 
 .operation-feedback.error {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
+  background: var(--bg-error);
+  color: var(--text-error);
+  border: 1px solid var(--border-error);
 }
 
 .operation-feedback.info {
-  background: #d1ecf1;
-  color: #0c5460;
-  border: 1px solid #bee5eb;
+  background: var(--bg-info);
+  color: var(--text-info);
+  border: 1px solid var(--border-info);
 }
 
 .history-controls {
@@ -224,16 +224,16 @@
   margin: 10px 0;
   padding: 10px;
   background: var(--bg-card);
-  border-left: 3px solid #4CAF50;
+  border-left: 3px solid var(--color-success);
 }
 
 .solution-display .no-solution {
-  color: #d32f2f;
+  color: var(--color-error);
   font-weight: 500;
 }
 
 .solution-display .infinite-solutions {
-  color: #1976d2;
+  color: var(--color-info);
   font-weight: 500;
 }
 
@@ -254,13 +254,13 @@
 }
 
 .primary-btn {
-  background: #4CAF50 !important;
+  background: var(--color-success) !important;
   color: white !important;
   font-weight: bold;
 }
 
 .primary-btn:hover {
-  background: #45a049 !important;
+  background: var(--color-success-hover) !important;
 }
 
 .help-content ul {
@@ -270,10 +270,6 @@
 .help-content h3 {
   margin-top: 15px;
   margin-bottom: 10px;
-}
-
-.help-content strong {
-  color: #333;
 }
 
 /* Fraction display */

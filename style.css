@@ -22,6 +22,7 @@
     --text-exam-main: #b08d00;
     --text-danger-alert: #000000;
     --text-back-button: #a00;
+    --text-current-lesson: #000000;
     
     --border-primary: #aaa;
     --border-button: #aaa;
@@ -33,6 +34,22 @@
     
     --shadow-primary: rgba(0, 0, 0, 0.5);
     --shadow-current-lesson: #66ffad;
+    
+    /* Gauss-Jordan specific colors */
+    --color-success: #4CAF50;
+    --color-success-hover: #45a049;
+    --color-warning: #ff9800;
+    --color-error: #d32f2f;
+    --color-info: #1976d2;
+    --bg-success: #d4edda;
+    --text-success: #155724;
+    --border-success: #c3e6cb;
+    --bg-error: #f8d7da;
+    --text-error: #721c24;
+    --border-error: #f5c6cb;
+    --bg-info: #d1ecf1;
+    --text-info: #0c5460;
+    --border-info: #bee5eb;
 }
 
 /* Dark Theme */
@@ -58,6 +75,7 @@
     --text-exam-main: #d4b700;
     --text-danger-alert: #ffffff;
     --text-back-button: #ff6666;
+    --text-current-lesson: #ffffff;
     
     --border-primary: #555;
     --border-button: #555;
@@ -69,6 +87,22 @@
     
     --shadow-primary: rgba(0, 0, 0, 0.8);
     --shadow-current-lesson: #2d6645;
+    
+    /* Gauss-Jordan specific colors for dark mode */
+    --color-success: #66bb6a;
+    --color-success-hover: #5cb85c;
+    --color-warning: #ffa726;
+    --color-error: #ef5350;
+    --color-info: #42a5f5;
+    --bg-success: #1b4d1b;
+    --text-success: #a8e6a8;
+    --border-success: #2d6b2d;
+    --bg-error: #4d1a1a;
+    --text-error: #ffb3b3;
+    --border-error: #6b2d2d;
+    --bg-info: #1a3d4d;
+    --text-info: #a8d8e6;
+    --border-info: #2d5b6b;
 }
 
 body {
@@ -141,7 +175,7 @@ button:hover {
 button.current-lesson {
     background: var(--bg-current-lesson) !important;
     border-color: var(--border-current-lesson) !important;
-    color: var(--text-primary) !important;
+    color: var(--text-current-lesson) !important;
     box-shadow: 0 0 8px var(--shadow-current-lesson);
 }
 .schoolend-container {
@@ -322,7 +356,7 @@ button.current-lesson {
 }
 @media (max-width: 1000px) {
     body {
-        font-size: 2.5rem;
+        font-size: 1rem;
         padding: 1em;
     }
     main {
@@ -363,6 +397,17 @@ button.current-lesson {
         padding: 10px 0;
         width: 100%;
         box-sizing: border-box;
+    }
+    /* Theme toggle button mobile adjustments */
+    .theme-toggle-btn {
+        width: 45px;
+        height: 45px;
+        top: 10px;
+        right: 10px;
+        padding: 8px;
+    }
+    .theme-toggle-btn .material-icons {
+        font-size: 24px;
     }
 }
 svg{
