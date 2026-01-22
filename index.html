@@ -29,6 +29,14 @@
         <div id="next-lesson-end" style="margin-top:2em; font-size:1.3em;"></div>
         <script src="bbk.js"></script>
         <script>startLessonCountdown();</script>
+        <script>
+            // Register Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('Service Worker registered'))
+                    .catch(error => console.log('Service Worker registration failed:', error));
+            }
+        </script>
     </div>
     <div class="card">
         <h2>Prüfungen</h2>
@@ -37,6 +45,17 @@
         </p>
         <a href="./pruefungen/">
             <button class="link-btn">Prüfungen Seite</button>
+        </a>
+    </div>
+
+    <div class="card">
+        <h2>Gauss-Jordan Rechner</h2>
+        <p>
+            Ein interaktiver Rechner für Gauss-Jordan-Elimination. Löse lineare Gleichungssysteme
+            Schritt für Schritt mit Bruchrechnung, automatischer Lösung und vollständiger Historie.
+        </p>
+        <a href="./gauss-jordan/">
+            <button class="link-btn">Gauss-Jordan Rechner</button>
         </a>
     </div>
 
