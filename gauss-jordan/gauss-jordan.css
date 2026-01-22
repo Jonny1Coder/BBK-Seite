@@ -1,0 +1,312 @@
+/* Gauss-Jordan Calculator Styles */
+.gauss-card {
+  max-width: 90%;
+}
+.matrix-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.matrix-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.matrix-controls input[type="number"] {
+  width: 60px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.matrix-container {
+  overflow-x: auto;
+  margin: 20px 0;
+  min-height: 200px;
+}
+
+.matrix-table {
+  border-collapse: separate;
+  border-spacing: 4px;
+  margin: 0 auto;
+}
+
+.matrix-table td {
+  min-width: 60px;
+  padding: 0;
+}
+
+.matrix-table input {
+  padding: 8px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.matrix-table input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+.matrix-table .row-label {
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-align: center;
+  vertical-align: middle;
+  padding: 8px 12px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  cursor: grab;
+  user-select: none;
+  min-width: 40px;
+}
+
+.matrix-table .row-label:active {
+  cursor: grabbing;
+}
+
+.matrix-table tr.dragging {
+  opacity: 0.5;
+}
+
+.matrix-table tr.drag-over {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.matrix-table tr.active-row {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.matrix-table tr.active-row input {
+  border-color: #4CAF50;
+  background: rgba(76, 175, 80, 0.05);
+}
+
+.matrix-table input.pivot-element {
+  border-color: #ff9800;
+  background: rgba(255, 152, 0, 0.1);
+  font-weight: bold;
+}
+
+.matrix-table input.changed-value {
+  animation: highlight-change 1s ease-out;
+}
+
+@keyframes highlight-change {
+  0% {
+    background: rgba(255, 235, 59, 0.5);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.operation-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.operation-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.operation-input-group label {
+  font-weight: 500;
+}
+
+.operation-input-group input[type="text"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.quick-operations, .auto-solve {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.quick-operations h3, .auto-solve h3 {
+  width: 100%;
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+}
+
+.operation-feedback {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  min-height: 30px;
+}
+
+.operation-feedback.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.operation-feedback.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.operation-feedback.info {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.history-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.history-display {
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  background: #fafafa;
+}
+
+.history-item {
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.solution-display {
+  padding: 15px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-height: 100px;
+}
+
+.solution-display .solution-header {
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+.solution-display .solution-vector {
+  font-family: monospace;
+  margin: 10px 0;
+  padding: 10px;
+  background: white;
+  border-left: 3px solid #4CAF50;
+}
+
+.solution-display .no-solution {
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+.solution-display .infinite-solutions {
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.import-export {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.import-export h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+}
+
+.import-export button {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.primary-btn {
+  background: #4CAF50 !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+.primary-btn:hover {
+  background: #45a049 !important;
+}
+
+.help-content ul {
+  line-height: 1.8;
+}
+
+.help-content h3 {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.help-content strong {
+  color: #333;
+}
+
+/* Fraction display */
+.fraction {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.fraction .numerator {
+  display: block;
+  border-bottom: 1px solid #000;
+  padding: 0 3px;
+}
+
+.fraction .denominator {
+  display: block;
+  padding: 0 3px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .matrix-table input {
+    min-width: 50px;
+    padding: 5px;
+    font-size: 0.9rem;
+  }
+  
+  .matrix-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .operation-input-group {
+    width: 100%;
+  }
+  
+  .quick-operations, .auto-solve {
+    flex-direction: column;
+  }
+  
+  .quick-operations button, .auto-solve button {
+    width: 100%;
+  }
+}
