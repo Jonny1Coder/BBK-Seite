@@ -50,6 +50,8 @@
     --bg-info: #d1ecf1;
     --text-info: #0c5460;
     --border-info: #bee5eb;
+    --bg-warning: rgba(255, 152, 0, 0.1);
+    --bg-highlight: rgba(255, 235, 59, 0.5);
 }
 
 /* Dark Theme */
@@ -103,6 +105,8 @@
     --bg-info: #1a3d4d;
     --text-info: #a8d8e6;
     --border-info: #2d5b6b;
+    --bg-warning: rgba(255, 167, 38, 0.15);
+    --bg-highlight: rgba(255, 235, 59, 0.3);
 }
 
 body {
