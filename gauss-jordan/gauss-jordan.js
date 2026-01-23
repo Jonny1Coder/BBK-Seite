@@ -696,12 +696,7 @@ class GaussJordanCalculator {
           const constantTerm = this.matrix.getValue(row, this.matrix.cols - 1);
           
           // Collect terms for free variables
-          let terms = [];
-          
-          // Add constant term
-          if (!constantTerm.isZero()) {
-            terms.push(constantTerm.toString());
-          }
+          let variableTerms = [];
           
           // Add terms for free variables
           for (let j = 0; j < numVariables; j++) {
@@ -713,38 +708,41 @@ class GaussJordanCalculator {
                 
                 if (coeffNeg.num === 1 && coeffNeg.den === 1) {
                   // Coefficient is 1
-                  terms.push({ sign: '+', text: `x<sub>${j + 1}</sub>` });
+                  variableTerms.push({ sign: '+', text: `x<sub>${j + 1}</sub>` });
                 } else if (coeffNeg.num === -1 && coeffNeg.den === 1) {
                   // Coefficient is -1
-                  terms.push({ sign: '-', text: `x<sub>${j + 1}</sub>` });
+                  variableTerms.push({ sign: '-', text: `x<sub>${j + 1}</sub>` });
                 } else {
                   // General coefficient
                   if (coeffNeg.num >= 0) {
-                    terms.push({ sign: '+', text: `${coeffNeg.toString()}·x<sub>${j + 1}</sub>` });
+                    variableTerms.push({ sign: '+', text: `${coeffNeg.toString()}·x<sub>${j + 1}</sub>` });
                   } else {
                     // Negative coefficient: split sign and value
                     const absCoeff = new Fraction(-coeffNeg.num, coeffNeg.den);
-                    terms.push({ sign: '-', text: `${absCoeff.toString()}·x<sub>${j + 1}</sub>` });
+                    variableTerms.push({ sign: '-', text: `${absCoeff.toString()}·x<sub>${j + 1}</sub>` });
                   }
                 }
               }
             }
           }
           
-          if (terms.length === 0) {
+          // Build the equation
+          if (constantTerm.isZero() && variableTerms.length === 0) {
             equation += '0';
           } else {
-            // Build equation with proper formatting
-            for (let i = 0; i < terms.length; i++) {
-              const term = terms[i];
-              if (i === 0) {
-                // First term: only add sign if it's minus or constant is zero
-                if (constantTerm.isZero()) {
-                  equation += term.sign === '-' ? `- ${term.text}` : term.text;
-                } else {
-                  equation += ` ${term.sign} ${term.text}`;
-                }
+            // Add constant term first (if non-zero)
+            if (!constantTerm.isZero()) {
+              equation += constantTerm.toString();
+            }
+            
+            // Add variable terms
+            for (let i = 0; i < variableTerms.length; i++) {
+              const term = variableTerms[i];
+              if (constantTerm.isZero() && i === 0) {
+                // First term with no constant: omit '+' for positive, include '-' for negative
+                equation += term.sign === '-' ? `- ${term.text}` : term.text;
               } else {
+                // Subsequent terms or constant exists: always show sign
                 equation += ` ${term.sign} ${term.text}`;
               }
             }
