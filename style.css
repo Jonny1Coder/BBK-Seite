@@ -401,7 +401,13 @@ button.current-lesson {
     .schoolend-title, .schoolend-countdown {
         font-size: 1em;
     }
-    .back-btn, .home-btn {
+    .back-btn {
+        font-size: 1em;
+        padding: 10px 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .home-btn {
         font-size: 1em;
         padding: 10px;
         width: calc(50% - 5px); /* Half width minus gap */
