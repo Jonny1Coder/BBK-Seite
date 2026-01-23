@@ -445,6 +445,7 @@ button.current-lesson {
     .theme-toggle-btn {
         width: auto; /* Allow flex to control width */
         min-width: auto;
+        min-height: auto; /* Reset min-height for mobile */
         border-radius: 2em; /* Match home button */
         aspect-ratio: auto;
         flex: 1; /* Same flex as home button */
