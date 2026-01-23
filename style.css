@@ -419,13 +419,13 @@ button.current-lesson {
     .theme-toggle-btn {
         width: calc(50% - 5px); /* Half width minus gap */
         height: 45px;
-        min-width: unset;
+        min-width: auto;
         min-height: 45px;
         top: 10px;
         right: 10px;
         padding: 0;
         border-radius: 2em; /* Match home button */
-        aspect-ratio: unset; /* Remove circular constraint */
+        aspect-ratio: auto; /* Remove circular constraint */
     }
     .theme-toggle-btn .material-icons {
         font-size: 24px;
