@@ -111,7 +111,7 @@
         if (document.querySelector('.theme-toggle-btn')) return;
         
         const button = document.createElement('button');
-        button.className = 'theme-toggle-btn';
+        button.className = 'nav-btn theme-toggle-btn';
         button.title = 'Thema umschalten: Auto → Hell → Dunkel → Auto';
         button.setAttribute('aria-label', 'Thema umschalten');
         
@@ -122,7 +122,14 @@
         button.appendChild(icon);
         button.addEventListener('click', cycleTheme);
         
-        document.body.appendChild(button);
+        // Find the nav container or create one if it doesn't exist
+        let nav = document.querySelector('.top-nav');
+        if (!nav) {
+            nav = document.createElement('nav');
+            nav.className = 'top-nav';
+            document.body.insertBefore(nav, document.body.firstChild);
+        }
+        nav.appendChild(button);
         
         // Update icon to reflect current mode
         updateThemeIcon(getStoredTheme());
