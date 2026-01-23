@@ -377,7 +377,7 @@ button.current-lesson {
     }
     h1 {
         font-size: 1.5em;
-        margin-top: 20px;
+        margin-top: 60px; /* Push heading below fixed buttons */
     }
     h2 {
         font-size: 1.1em;
@@ -403,27 +403,27 @@ button.current-lesson {
     }
     .back-btn, .home-btn {
         font-size: 1em;
-        padding: 10px 0;
-        width: 100%;
+        padding: 10px;
+        width: calc(50% - 5px); /* Half width minus gap */
         box-sizing: border-box;
+        left: 10px;
+        border-radius: 2em;
     }
     /* Theme toggle button mobile adjustments */
     .theme-toggle-btn {
-        width: 45px;
+        width: calc(50% - 5px); /* Half width minus gap */
         height: 45px;
-        min-width: 45px;
+        min-width: unset;
         min-height: 45px;
         top: 10px;
         right: 10px;
         padding: 0;
+        border-radius: 2em; /* Match home button */
+        aspect-ratio: unset; /* Remove circular constraint */
     }
     .theme-toggle-btn .material-icons {
         font-size: 24px;
         line-height: 1;
-    }
-    /* Ensure home button doesn't overlap with theme button */
-    .home-btn {
-        max-width: calc(100% - 65px); /* Leave space for theme button (45px width + 10px right + 10px gap) */
     }
 }
 svg{
