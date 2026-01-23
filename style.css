@@ -423,7 +423,7 @@ button.current-lesson {
     }
     /* Ensure home button doesn't overlap with theme button */
     .home-btn {
-        max-width: calc(100% - 70px); /* Leave space for theme button */
+        max-width: calc(100% - 65px); /* Leave space for theme button (45px width + 10px right + 10px gap) */
     }
 }
 svg{
