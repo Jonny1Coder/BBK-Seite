@@ -412,6 +412,7 @@ button.current-lesson {
         padding: 10px;
         width: calc(50% - 5px); /* Half width minus gap */
         box-sizing: border-box;
+        top: 10px;
         left: 10px;
         border-radius: 2em;
     }
