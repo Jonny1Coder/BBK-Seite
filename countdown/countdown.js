@@ -15,7 +15,7 @@ window.resetView = function() {
 
 document.addEventListener("DOMContentLoaded", function() {
     // Schulende-Datum: 29. Mai 2026, 00:00:00
-    const schoolEndDate = new Date(2026, 4, 18, 0, 0, 0, 0); // Monat 4 = Mai (0-basiert)
+    const schoolEndDate = new Date(2026, 4, 11, 0, 0, 0, 0); // Monat 4 = Mai (0-basiert)
 
     function updateSchoolEndCountdown() {
         const now = new Date();
