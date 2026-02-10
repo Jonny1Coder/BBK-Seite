@@ -1,9 +1,10 @@
-const CACHE_NAME = 'bbk-seite-v1';
+const CACHE_NAME = 'bbk-seite-v2';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/style.css',
-  '/bbk.js',
+  '/assets/style.css',
+  '/assets/shared.js',
+  '/assets/home.js',
   '/countdown/',
   '/countdown/index.html',
   '/countdown/countdown.js',

@@ -104,14 +104,9 @@ document.addEventListener("DOMContentLoaded", function() {
     let currentTargetDate = null;
     let currentLessonIndex = null;
 
-    function parseTime(str) {
-        const [h, m] = str.split(":").map(Number);
-        return {h, m};
-    }
-
     function getTargetTime(idx) {
         const today = new Date();
-        const {h, m} = parseTime(stunden[idx][1]); // Endzeit
+        const [h, m] = stunden[idx][1].split(":").map(Number);
         let target = new Date(today.getFullYear(), today.getMonth(), today.getDate(), h, m, 0, 0);
         // Falls die Stunde schon vorbei ist, nimm den nächsten Tag
         if (target < today) target.setDate(target.getDate() + 1);
