@@ -1,6 +1,3 @@
-// Gemeinsam genutzte Funktionen und Konstanten für alle Seiten
-
-// Zentrale Definition der Stundenzeiten
 const stunden = [
     ["07:55", "08:40"],
     ["08:40", "09:25"],

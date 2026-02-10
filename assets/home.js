@@ -1,8 +1,3 @@
-// Funktionen spezifisch für die Startseite (index.html)
-
-/**
- * Aktualisiert die Anzeige der verbleibenden Zeit bis zum Ende der aktuellen Stunde
- */
 function updateNextLessonEnd() {
     const idx = getCurrentStundeIndex();
     const div = document.getElementById('next-lesson-end');
@@ -24,9 +19,6 @@ function updateNextLessonEnd() {
     div.textContent = `${idx+1}. Stunde noch ${min} Minuten ${sec} Sekunden ...`;
 }
 
-/**
- * Startet den Countdown für das Ende der aktuellen Stunde
- */
 function startLessonCountdown() {
     updateNextLessonEnd();
     setInterval(updateNextLessonEnd, 1000);

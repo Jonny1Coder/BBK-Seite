@@ -112,8 +112,6 @@ button:hover {
     background-color: #76ff80;
 }
 
-
-/* Prüfungs-Karten Styles (für /pruefungen/) */
 #exams-list{
     margin-left: 15em;
     margin-right: 15em;
@@ -242,7 +240,6 @@ button:hover {
     .countdown {
         font-size: 2em;
     }
-    /* mobile: Zielzeit größer sichtbarer machen */
     .stunde-target, #stunde-target {
         font-size: 1.6rem;
     }

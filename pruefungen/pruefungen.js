@@ -9,18 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-
-    // Erzeugt eine Karte mit zwei Terminen (Haupttermin + Nachschreibtermin)
     function createExamCard(exam) {
         const container = document.createElement('div');
         container.className = 'exam-card';
 
-        // Titel
         const title = document.createElement('div');
         title.textContent = `${exam.fach}`;
         title.className = 'exam-title';
 
-        // Haupttermin Label + Countdown (Countdown direkt nach Label im DOM)
         const mainLabel = document.createElement('div');
         mainLabel.textContent = `Termin: ${formatDateISO(exam.termin)}`;
         mainLabel.className = 'exam-main-label';
@@ -31,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
         mainCountdown.dataset.iso = exam.termin || '';
         mainCountdown.dataset.type = 'termin';
 
-        // Nachschreibtermin Label + Countdown (immer erzeugen, aber ggf. verstecken)
         const nachLabel = document.createElement('div');
         nachLabel.className = 'exam-nach-label';
         const nachText = formatDateISO(exam.nachschreibtermin);
@@ -43,16 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
         nachCountdown.dataset.iso = exam.nachschreibtermin || '';
         nachCountdown.dataset.type = 'nach';
 
-        // Falls kein Nachschreibtermin vorhanden ist: nur das Datumselement und Countdown verbergen, Container bleibt sichtbar
         if (!exam.nachschreibtermin) {
             nachLabel.classList.add('hidden');
             nachCountdown.classList.add('hidden');
-            // Zusätzlich leeren wir den Inhalt (Sicherheit)
             nachLabel.textContent = '';
             nachCountdown.textContent = '';
         }
 
-        // Aufbau der Karte: Titel, Haupttermin+Countdown, Nachschreibtermin+Countdown
         container.appendChild(title);
 
         const mainBlock = document.createElement('div');
@@ -83,20 +75,17 @@ document.addEventListener('DOMContentLoaded', () => {
             elem.textContent = '';
             return;
         }
-        // Wenn Ziel in der Vergangenheit liegt: zeige die Zeit seit dem Ereignis (laufend)
         if (now >= target) {
-            let diff = Math.floor((now - target) / 1000); // vergangene Sekunden
+            let diff = Math.floor((now - target) / 1000);
             const days = Math.floor(diff / (3600 * 24));
             diff %= 3600 * 24;
             const hours = Math.floor(diff / 3600);
             diff %= 3600;
             const minutes = Math.floor(diff / 60);
             const seconds = diff % 60;
-            // Nutzerwunsch: statt "seit" soll "vor" angezeigt werden
             elem.textContent = `vor ${days}d ${String(hours).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m ${String(seconds).padStart(2,'0')}s`;
             return;
         }
-        // Sonst: Countdown bis zum Ereignis
         let diff = Math.floor((target - now) / 1000);
         const days = Math.floor(diff / (3600 * 24));
         diff %= 3600 * 24;
@@ -112,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const countdownElems = [];
 
         const now = new Date();
-        // Annahme: Eine Prüfung gilt als vollständig vorbei, wenn sowohl Haupttermin als auch (falls vorhanden) Nachschreibtermin in der Vergangenheit liegen
         const upcoming = [];
         const fullyExpired = [];
         exams.forEach(exam => {
@@ -139,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Zuerst kommende Prüfungen rendern
         upcoming.forEach((exam) => {
             const {container, mainCountdown, nachCountdown} = createExamCard(exam);
             list.appendChild(container);
@@ -147,7 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (exam.nachschreibtermin && nachCountdown) countdownElems.push(nachCountdown);
         });
 
-        // Danach vollständig vergangene Prüfungen rendern (ausgegraut, nach unten)
         fullyExpired.forEach((exam) => {
             const {container, mainCountdown, nachCountdown} = createExamCard(exam);
             // optische Hervorhebung: ausgegraut (CSS-Klasse statt Inline-Styles)
