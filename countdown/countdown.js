@@ -15,7 +15,7 @@ window.resetView = function() {
 
 document.addEventListener("DOMContentLoaded", function() {
     // Schulende-Datum: 29. Mai 2026, 00:00:00
-    const schoolEndDate = new Date(2026, 4, 18, 0, 0, 0, 0); // Monat 4 = Mai (0-basiert)
+    const schoolEndDate = new Date(2026, 4, 11, 0, 0, 0, 0); // Monat 4 = Mai (0-basiert)
 
     function updateSchoolEndCountdown() {
         const now = new Date();
@@ -152,9 +152,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function updateCountdown() {
-         if (!currentTargetDate) return;
-         const now = new Date();
-         let diffSec = Math.floor((currentTargetDate - now) / 1000);
+        if (!currentTargetDate) return;
+        const now = new Date();
+        let diffSec = Math.floor((currentTargetDate - now) / 1000);
 
         // If target is already passed, show "Die Stunde ist vorbei!" and stop interval
         if (diffSec <= 0) {
@@ -270,7 +270,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     height: 50%
                   }
                   #countdown, .countdown {
-                    font-size: 18px !important;
+                    font-size: 34px !important;
                     color: #000 !important;
                     font-weight:700 !important;
                     line-height:1 !important;
@@ -326,23 +326,23 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                         pipWindowCountdownNode = null;
                         pipWindowRef = null;
-                     } catch (e) {
-                         console.error('Fehler beim Rückverschieben des Countdowns:', e);
+                    } catch (e) {
+                        console.error('Fehler beim Rückverschieben des Countdowns:', e);
                         pipWindowCountdownNode = null;
                         pipWindowRef = null;
-                     }
-                     pipBtn.disabled = false;
-                 };
+                    }
+                    pipBtn.disabled = false;
+                };
 
-                 pipWindow.addEventListener('unload', restore);
+                pipWindow.addEventListener('unload', restore);
 
-             } catch (err) {
-                 pipBtn.disabled = false;
-                 alert('Fehler beim Öffnen des PiP-Fensters: ' + (err && err.message ? err.message : err));
-             }
-         }
+            } catch (err) {
+                pipBtn.disabled = false;
+                alert('Fehler beim Öffnen des PiP-Fensters: ' + (err && err.message ? err.message : err));
+            }
+        }
 
-         pipBtn.addEventListener('click', openCountdownInPiP);
-     }
+        pipBtn.addEventListener('click', openCountdownInPiP);
+    }
 
 })
