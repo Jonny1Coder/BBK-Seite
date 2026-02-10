@@ -1,7 +1,46 @@
 # Aufbau
 
 - `./countdown`: Countdown der Schulstunden bis zum Ende des Schultags
-- `./pruefungen`: Prüfunsg-Übersicht mit Countdown für Prüfungen
+- `./pruefungen`: Prüfungs-Übersicht mit Countdown für Prüfungen
+- `./assets`: Gemeinsam genutzte Ressourcen (CSS, JavaScript, Service Worker)
+
+## Ordner `assets` — Gemeinsam genutzte Dateien
+
+### `assets/shared.js`
+Gemeinsam genutzte Funktionen und Konstanten für alle Seiten:
+- `stunden` — Array mit Stundenzeiten (verwendet in index.html und countdown)
+- `timeToMinutes(str)` — Konvertiert Zeit (HH:MM) in Minuten seit Mitternacht
+- `getCurrentStundeIndex()` — Gibt Index der aktuell laufenden Schulstunde zurück
+- `formatDateISO(iso)` — Formatiert ISO-Datum in deutsches Format
+
+### `assets/home.js`
+Funktionen spezifisch für die Startseite (index.html):
+- `updateNextLessonEnd()` — Aktualisiert Anzeige der verbleibenden Zeit bis zum Ende der aktuellen Stunde
+- `startLessonCountdown()` — Startet den Countdown für das Ende der aktuellen Stunde
+
+### `assets/style.css`
+Zentrale Stylesheet-Datei für alle Seiten.
+
+### `assets/sw.js`
+Service Worker für Offline-Funktionalität und Caching.
+
+## Ordner `countdown` — Dateien & Funktionen
+
+### `countdown/index.html`
+- HTML-Frontend für den Schulstunden-Countdown
+- Lädt `shared.js` für gemeinsame Funktionen und `countdown.js` für seiten-spezifische Logik
+
+### `countdown/countdown.js`
+Countdown-spezifische Funktionen:
+- Nutzt `stunden` und `getCurrentStundeIndex()` aus `shared.js`
+- `renderButtons()` — Rendert Buttons für jede Schulstunde, markiert die aktuelle
+- `resetView()` — Zurück zur Stundenauswahl
+- `startCountdown(idx)` — Startet Countdown für ausgewählte Stunde
+- `updateCountdown()` — Aktualisiert Countdown-Anzeige jede Sekunde
+- `updateTargetDisplay()` — Zeigt Zielzeit an
+- `shiftTargetBy(minutes)` — Verschiebt Zielzeit um ±15 Minuten
+- `openCountdownInPiP()` — Öffnet Countdown in Picture-in-Picture Fenster
+- `updateSchoolEndCountdown()` — Countdown bis zum Schulende (11. Mai 2026)
 
 ## Ordner `pruefungen` — Dateien & Funktionen
 
@@ -28,12 +67,9 @@ Beschreibung der wichtigsten Funktionen und ihres Verhaltens:
     - Liefert ein Promise mit dem geparsten JSON aus `data.json`.
     - Werfen eines Fehlers bei fehlerhaftem HTTP-Status.
 
-- `formatDateISO(iso)`
-    - Wandelt einen ISO-Datum-String in eine lokalisierte (de-DE) Datums-/Uhrzeitdarstellung um.
-    - Rückgabe: String, z. B. `18.05.2026, 09:00`.
-
 - `createExamCard(exam)`
     - Erzeugt und returned ein DOM-Fragment (Element) für eine Prüfungs-Karte.
+    - Nutzt `formatDateISO()` aus `shared.js` für die Datumsformatierung.
     - Struktur / Klassen (wichtig für Styling):
         - Container `.exam-card`
         - `.exam-title` — Fach
