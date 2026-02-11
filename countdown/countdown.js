@@ -216,6 +216,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 pipWindow.document.body.style.alignItems = 'center';
                 pipWindow.document.body.style.justifyContent = 'center';
                 pipWindow.document.body.style.background = 'white';
+                pipWindow.document.body.style.position = 'relative';
 
                 const pipStyle = pipWindow.document.createElement('style');
                 pipStyle.textContent = `
@@ -229,7 +230,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     align-items:center;
                     justify-content:center;
                     font-family: Arial, Helvetica, sans-serif !important;
-                    height: 50%
+                    height: 50%;
+                    position: relative;
                   }
                   #countdown, .countdown {
                     font-size: 34px !important;
@@ -250,6 +252,38 @@ document.addEventListener("DOMContentLoaded", function() {
                       margin: 0 !important;
                       padding: 0 !important;
                   }
+                  /* Custom close button */
+                  #pip-close-btn {
+                    position: fixed;
+                    top: 8px;
+                    right: 8px;
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 50%;
+                    background: rgba(0, 0, 0, 0.7);
+                    border: none;
+                    color: white;
+                    font-size: 18px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    opacity: 0;
+                    transition: opacity 0.3s ease, background 0.2s ease;
+                    z-index: 10000;
+                    padding: 0;
+                    line-height: 1;
+                  }
+                  body:hover #pip-close-btn {
+                    opacity: 1;
+                  }
+                  #pip-close-btn:hover {
+                    background: rgba(220, 53, 69, 0.9);
+                  }
+                  #pip-close-btn:active {
+                    background: rgba(200, 35, 51, 1);
+                  }
                 `;
                 pipWindow.document.head.appendChild(pipStyle);
 
@@ -257,6 +291,20 @@ document.addEventListener("DOMContentLoaded", function() {
                     const pipClone = countdownDiv.cloneNode(true);
                     pipClone.id = 'countdown-pip';
                     pipWindow.document.body.appendChild(pipClone);
+
+                    // Add custom close button
+                    const closeBtn = pipWindow.document.createElement('button');
+                    closeBtn.id = 'pip-close-btn';
+                    closeBtn.innerHTML = '×';
+                    closeBtn.title = 'PiP schließen';
+                    closeBtn.addEventListener('click', () => {
+                        try {
+                            pipWindow.close();
+                        } catch (e) {
+                            console.warn('Fehler beim Schließen des PiP-Fensters:', e);
+                        }
+                    });
+                    pipWindow.document.body.appendChild(closeBtn);
 
                     try {
                         const pipScript = pipWindow.document.createElement('script');
