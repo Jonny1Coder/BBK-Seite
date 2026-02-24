@@ -41,6 +41,10 @@ class Fraction {
   }
   
   multiply(other) {
+    // Note: Direct multiplication of numerators and denominators can theoretically
+    // lead to integer overflow for very large fractions. JavaScript uses 64-bit floats
+    // which provide safe integer operations up to Number.MAX_SAFE_INTEGER (2^53 - 1).
+    // For typical calculator usage, this limit is unlikely to be reached.
     return new Fraction(this.num * other.num, this.den * other.den);
   }
   
@@ -48,6 +52,7 @@ class Fraction {
     if (other.num === 0) {
       throw new Error('Division durch Null');
     }
+    // Note: See multiply() comment regarding numerical limits
     return new Fraction(this.num * other.den, this.den * other.num);
   }
   
@@ -197,7 +202,6 @@ class GaussJordanCalculator {
     this.history = [];
     this.historyIndex = -1;
     this.autoSolveMode = false;
-    this.autoSolvePaused = false;
     this.autoSolveSteps = [];
     this.autoSolveIndex = 0;
     this.init();
@@ -367,8 +371,29 @@ class GaussJordanCalculator {
   parseExpression(expr, targetRow) {
     const operations = [];
     
-    // Match patterns like: 3*II, -IV/6, I, +2*III
-    // Capture groups: (1) sign, (2) coefficient, (3) mult symbol, (4) Roman numeral
+    /**
+     * Match a single row term in the expression, e.g.:
+     *   "I", "-II", "+3*III", "0.5*IV", "-2/3*V"
+     *
+     * Overall grammar (per term):
+     *   [sign] [coefficient] [*] ROW
+     *   - sign: optional '+' or '-', defaults to '+' if omitted
+     *   - coefficient: optional number; if omitted, defaults to 1
+     *       - integer:        "3"
+     *       - decimal:        "0.5", ".5"
+     *       - fraction:       "2/3"
+     *   - '*': optional multiplication symbol (required if coefficient is present)
+     *   - ROW: Roman numeral row designator (I, II, III, IV, V, etc.)
+     *
+     * Capture groups:
+     *   (1) sign         -> '' | '+' | '-'
+     *   (2) coefficient  -> undefined | '<int>' | '<decimal>' | '<numerator>/<denominator>'
+     *   (3) mult symbol  -> '' | '*'  (presence of '*' between coefficient and row)
+     *   (4) row literal  -> Roman numeral string, e.g. 'I', 'II', 'III', 'IV'
+     *
+     * The global 'g' flag is used so that termRegex.exec(expr) can be called
+     * repeatedly in a while-loop to iterate over all term occurrences.
+     */
     const termRegex = /([+-]?)(\d+\/\d+|\d*\.?\d+)?(\*?)([IVX]+)/g;
     let match;
     
@@ -508,11 +533,10 @@ class GaussJordanCalculator {
   }
   
   startAutoSolve() {
-    const { steps, finalMatrix } = this.generateSolutionSteps();
+    const { steps } = this.generateSolutionSteps();
     this.autoSolveSteps = steps;
     this.autoSolveIndex = 0;
     this.autoSolveMode = true;
-    this.autoSolvePaused = false;
     
     document.getElementById('next-step-btn').disabled = false;
     document.getElementById('pause-btn').disabled = false;
@@ -572,6 +596,10 @@ class GaussJordanCalculator {
           break;
       }
     }
+    
+    this.autoSolveMode = false;
+    document.getElementById('next-step-btn').disabled = true;
+    document.getElementById('pause-btn').disabled = true;
     
     this.saveState('Komplett gelöst');
     this.renderMatrix();
@@ -668,12 +696,7 @@ class GaussJordanCalculator {
           const constantTerm = this.matrix.getValue(row, this.matrix.cols - 1);
           
           // Collect terms for free variables
-          let terms = [];
-          
-          // Add constant term
-          if (!constantTerm.isZero()) {
-            terms.push(constantTerm.toString());
-          }
+          let variableTerms = [];
           
           // Add terms for free variables
           for (let j = 0; j < numVariables; j++) {
@@ -685,38 +708,41 @@ class GaussJordanCalculator {
                 
                 if (coeffNeg.num === 1 && coeffNeg.den === 1) {
                   // Coefficient is 1
-                  terms.push({ sign: '+', text: `x<sub>${j + 1}</sub>` });
+                  variableTerms.push({ sign: '+', text: `x<sub>${j + 1}</sub>` });
                 } else if (coeffNeg.num === -1 && coeffNeg.den === 1) {
                   // Coefficient is -1
-                  terms.push({ sign: '-', text: `x<sub>${j + 1}</sub>` });
+                  variableTerms.push({ sign: '-', text: `x<sub>${j + 1}</sub>` });
                 } else {
                   // General coefficient
                   if (coeffNeg.num >= 0) {
-                    terms.push({ sign: '+', text: `${coeffNeg.toString()}·x<sub>${j + 1}</sub>` });
+                    variableTerms.push({ sign: '+', text: `${coeffNeg.toString()}·x<sub>${j + 1}</sub>` });
                   } else {
                     // Negative coefficient: split sign and value
                     const absCoeff = new Fraction(-coeffNeg.num, coeffNeg.den);
-                    terms.push({ sign: '-', text: `${absCoeff.toString()}·x<sub>${j + 1}</sub>` });
+                    variableTerms.push({ sign: '-', text: `${absCoeff.toString()}·x<sub>${j + 1}</sub>` });
                   }
                 }
               }
             }
           }
           
-          if (terms.length === 0) {
+          // Build the equation
+          if (constantTerm.isZero() && variableTerms.length === 0) {
             equation += '0';
           } else {
-            // Build equation with proper formatting
-            for (let i = 0; i < terms.length; i++) {
-              const term = terms[i];
-              if (i === 0) {
-                // First term: only add sign if it's minus or constant is zero
-                if (constantTerm.isZero()) {
-                  equation += term.sign === '-' ? `- ${term.text}` : term.text;
-                } else {
-                  equation += ` ${term.sign} ${term.text}`;
-                }
+            // Add constant term first (if non-zero)
+            if (!constantTerm.isZero()) {
+              equation += constantTerm.toString();
+            }
+            
+            // Add variable terms
+            for (let i = 0; i < variableTerms.length; i++) {
+              const term = variableTerms[i];
+              if (constantTerm.isZero() && i === 0) {
+                // First term with no constant: omit '+' for positive, include '-' for negative
+                equation += term.sign === '-' ? `- ${term.text}` : term.text;
               } else {
+                // Subsequent terms or constant exists: always show sign
                 equation += ` ${term.sign} ${term.text}`;
               }
             }
@@ -757,6 +783,14 @@ class GaussJordanCalculator {
       try {
         const rows = text.trim().split('\n');
         const data = rows.map(row => row.split(/[\t,;]/).map(s => s.trim()));
+        
+        // Validate that all rows have the same number of columns
+        const firstRowLength = data[0].length;
+        for (let i = 1; i < data.length; i++) {
+          if (data[i].length !== firstRowLength) {
+            throw new Error(`Inkonsistente Zeilenlängen: Zeile 1 hat ${firstRowLength} Spalten, Zeile ${i + 1} hat ${data[i].length} Spalten`);
+          }
+        }
         
         const newRows = data.length;
         const newCols = data[0].length;
@@ -893,6 +927,7 @@ class GaussJordanCalculator {
       this.history = [this.history[this.historyIndex]];
       this.historyIndex = 0;
       this.updateHistoryDisplay();
+      this.updateUndoRedoButtons();
       this.showFeedback('Historie gelöscht', 'info');
     });
     

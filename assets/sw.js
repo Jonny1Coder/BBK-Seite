@@ -11,7 +11,11 @@ const urlsToCache = [
   '/pruefungen/',
   '/pruefungen/index.html',
   '/pruefungen/pruefungen.js',
-  '/pruefungen/data.json'
+  '/pruefungen/data.json',
+  '/gauss-jordan/',
+  '/gauss-jordan/index.html',
+  '/gauss-jordan/gauss-jordan.js',
+  '/gauss-jordan/gauss-jordan.css'
 ];
 
 self.addEventListener('install', event => {

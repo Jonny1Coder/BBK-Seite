@@ -19,7 +19,9 @@
 .matrix-controls input[type="number"] {
   width: 60px;
   padding: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-card);
+  background: var(--bg-button);
+  color: var(--text-primary);
   border-radius: 4px;
 }
 
@@ -42,7 +44,9 @@
 
 .matrix-table input {
   padding: 8px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-card);
+  background: var(--bg-button);
+  color: var(--text-primary);
   border-radius: 4px;
   text-align: center;
   font-size: 1rem;
@@ -51,8 +55,8 @@
 
 .matrix-table input:focus {
   outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+  border-color: var(--color-success);
+  box-shadow: 0 0 5px var(--color-success);
 }
 
 .matrix-table .row-label {
@@ -61,7 +65,8 @@
   text-align: center;
   vertical-align: middle;
   padding: 8px 12px;
-  background: #f0f0f0;
+  background: var(--bg-button-home);
+  color: var(--text-primary);
   border-radius: 4px;
   cursor: grab;
   user-select: none;
@@ -77,21 +82,21 @@
 }
 
 .matrix-table tr.drag-over {
-  background: rgba(76, 175, 80, 0.1);
+  background: var(--bg-success);
 }
 
 .matrix-table tr.active-row {
-  background: rgba(76, 175, 80, 0.1);
+  background: var(--bg-success);
 }
 
 .matrix-table tr.active-row input {
-  border-color: #4CAF50;
-  background: rgba(76, 175, 80, 0.05);
+  border-color: var(--color-success);
+  background: var(--bg-success);
 }
 
 .matrix-table input.pivot-element {
-  border-color: #ff9800;
-  background: rgba(255, 152, 0, 0.1);
+  border-color: var(--color-warning);
+  background: var(--bg-warning);
   font-weight: bold;
 }
 
@@ -101,7 +106,7 @@
 
 @keyframes highlight-change {
   0% {
-    background: rgba(255, 235, 59, 0.5);
+    background: var(--bg-highlight);
   }
   100% {
     background: transparent;
@@ -126,7 +131,9 @@
 
 .operation-input-group input[type="text"] {
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-card);
+  background: var(--bg-button);
+  color: var(--text-primary);
   border-radius: 4px;
   font-size: 1rem;
 }
@@ -152,21 +159,21 @@
 }
 
 .operation-feedback.success {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
+  background: var(--bg-success);
+  color: var(--text-success);
+  border: 1px solid var(--border-success);
 }
 
 .operation-feedback.error {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
+  background: var(--bg-error);
+  color: var(--text-error);
+  border: 1px solid var(--border-error);
 }
 
 .operation-feedback.info {
-  background: #d1ecf1;
-  color: #0c5460;
-  border: 1px solid #bee5eb;
+  background: var(--bg-info);
+  color: var(--text-info);
+  border: 1px solid var(--border-info);
 }
 
 .history-controls {
@@ -179,15 +186,16 @@
 .history-display {
   max-height: 150px;
   overflow-y: auto;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-card);
   border-radius: 4px;
   padding: 10px;
-  background: #fafafa;
+  background: var(--bg-button-home);
+  color: var(--text-primary);
 }
 
 .history-item {
   padding: 5px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-card);
   font-family: monospace;
   font-size: 0.9rem;
 }
@@ -198,8 +206,9 @@
 
 .solution-display {
   padding: 15px;
-  background: #f9f9f9;
-  border: 1px solid #ddd;
+  background: var(--bg-button-home);
+  border: 1px solid var(--border-card);
+  color: var(--text-primary);
   border-radius: 4px;
   min-height: 100px;
 }
@@ -214,17 +223,17 @@
   font-family: monospace;
   margin: 10px 0;
   padding: 10px;
-  background: white;
-  border-left: 3px solid #4CAF50;
+  background: var(--bg-card);
+  border-left: 3px solid var(--color-success);
 }
 
 .solution-display .no-solution {
-  color: #d32f2f;
+  color: var(--color-error);
   font-weight: 500;
 }
 
 .solution-display .infinite-solutions {
-  color: #1976d2;
+  color: var(--color-info);
   font-weight: 500;
 }
 
@@ -239,7 +248,7 @@
 .import-export {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--border-card);
 }
 
 .import-export h3 {
@@ -253,13 +262,13 @@
 }
 
 .primary-btn {
-  background: #4CAF50 !important;
+  background: var(--color-success) !important;
   color: white !important;
   font-weight: bold;
 }
 
 .primary-btn:hover {
-  background: #45a049 !important;
+  background: var(--color-success-hover) !important;
 }
 
 .help-content ul {
@@ -272,7 +281,7 @@
 }
 
 .help-content strong {
-  color: #333;
+  color: var(--text-primary);
 }
 
 /* Fraction display */
@@ -284,7 +293,7 @@
 
 .fraction .numerator {
   display: block;
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid var(--text-primary);
   padding: 0 3px;
 }
 
