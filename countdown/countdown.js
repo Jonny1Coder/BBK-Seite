@@ -10,8 +10,35 @@ window.resetView = function() {
     }
 };
 
-document.addEventListener("DOMContentLoaded", function() {
-    const schoolEndDate = new Date(2026, 4, 11, 0, 0, 0, 0); // Monat 4 = Mai (0-basiert)
+document.addEventListener("DOMContentLoaded", async function() {
+    let schoolEndDate = new Date(2026, 4, 11, 0, 0, 0, 0); // Fallback-Datum
+    let schoolEndTitle = "Das Ende von Leiden";
+
+    try {
+        const response = await fetch('../assets/data.json');
+        const data = await response.json();
+        if (data.dates && data.dates.length > 0) {
+            const firstDate = data.dates[0];
+            schoolEndTitle = firstDate.title;
+            schoolEndDate = new Date(firstDate.date);
+
+            const titleElement = document.querySelector('.schoolend-title');
+            if (titleElement) {
+                const formattedDate = schoolEndDate.toLocaleDateString('de-DE', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                titleElement.textContent = `${schoolEndTitle} (${formattedDate}):`;
+            }
+        }
+    } catch (error) {
+        console.error('Fehler beim Laden der Daten:', error);
+        const titleElement = document.querySelector('.schoolend-title');
+        if (titleElement) {
+            titleElement.textContent = `${schoolEndTitle} (11. Mai 2026):`;
+        }
+    }
 
     function updateSchoolEndCountdown() {
         const now = new Date();
@@ -300,8 +327,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 alert('Fehler beim Öffnen des PiP-Fensters: ' + (err && err.message ? err.message : err));
             }
         }
-
         pipBtn.addEventListener('click', openCountdownInPiP);
     }
-
 })
