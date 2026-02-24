@@ -3,50 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <title>Schulstunden Countdown</title>
-<link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../assets/style.css">
   <link rel="icon" type="image/png" href="https://www.bbk.schule/typo3conf/ext/mj_bk/Resources/Public/Icons/favicon.ico">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <script src="../theme.js"></script>
 </head>
 <body>
-  <nav class="top-nav">
-    <button class="nav-btn home-btn" onclick="window.location.href='../index.html'">🏠 Home</button>
-  </nav>
-  <h1>Schulstunden Countdown</h1>
-  <div id="auswahl">
-    <p>Wähle eine Stunde:</p>
-    <div class="button-grid" id="stunden-btns"></div>
+<nav class="top-nav">
+  <button class="nav-btn home-btn" onclick="window.location.href='../index.html'">🏠 Home</button>
+</nav>
+<h1>Schulstunden Countdown</h1>
+<div id="auswahl">
+  <p>Wähle eine Stunde:</p>
+  <div class="button-grid" id="stunden-btns"></div>
+</div>
+<div id="countdown-view" style="display:none;">
+  <h2 id="stunde-label"></h2>
+  <div id="stunde-target" class="stunde-target"></div>
+  <div class="countdown" id="countdown"></div>
+  <div class="shift-controls">
+    <button id="shift-back" class="shift-btn">-15 min</button>
+    <button id="shift-forward" class="shift-btn">+15 min</button>
   </div>
-  <div id="countdown-view" style="display:none;">
-    <h2 id="stunde-label"></h2>
-    <div id="stunde-target" class="stunde-target"></div>
-    <div class="countdown" id="countdown"></div>
-    <div class="shift-controls">
-      <button id="shift-back" class="shift-btn">-15 min</button>
-      <button id="shift-forward" class="shift-btn">+15 min</button>
-    </div>
-    <button class="back-btn" onclick="resetView()">Zurück zur Auswahl</button>
-    <!-- Neuer Button: Bild-in-Bild für den Countdown -->
-    <button id="pip-btn" type="button" title="Countdown in Bild-in-Bild öffnen">
-      <svg class="pip" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-        <path d="M80-520v-80h144L52-772l56-56 172 172v-144h80v280H80Zm80 360q-33 0-56.5-23.5T80-240v-200h80v200h320v80H160Zm640-280v-280H440v-80h360q33 0 56.5 23.5T880-720v280h-80ZM560-160v-200h320v200H560Z"/>
-      </svg>
-    </button>
-  </div>
-    <div class="schoolend-container">
-    <div class="schoolend-title">Das Ende von Leiden (11. Mai 2026):</div>
-    <div id="schoolend-countdown" class="schoolend-countdown">Lädt…</div>
-  </div>
+  <button class="back-btn" onclick="resetView()">Zurück zur Auswahl</button>
+  <button id="pip-btn" type="button" title="Countdown in Bild-in-Bild öffnen">
+    <svg class="pip" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+      <path d="M80-520v-80h144L52-772l56-56 172 172v-144h80v280H80Zm80 360q-33 0-56.5-23.5T80-240v-200h80v200h320v80H160Zm640-280v-280H440v-80h360q33 0 56.5 23.5T880-720v280h-80ZM560-160v-200h320v200H560Z"/>
+    </svg>
+  </button>
+</div>
+<div class="schoolend-container">
+  <div class="schoolend-title">Lädt…</div>
+  <div id="schoolend-countdown" class="schoolend-countdown">Lädt…</div>
+</div>
 
-  <script src="../bbk.js"></script>
-  <script src="countdown.js"></script>
-  <script>
-    // Register Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(registration => console.log('Service Worker registered'))
-        .catch(error => console.log('Service Worker registration failed:', error));
-    }
-  </script>
+<script src="../assets/shared.js"></script>
+<script src="countdown.js"></script>
+<script>
+  // Register Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+            .then(registration => console.log('Service Worker registered'))
+            .catch(error => console.log('Service Worker registration failed:', error));
+  }
+</script>
 </body>
 </html>

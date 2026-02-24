@@ -3,10 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>BBK Seite - Startseite</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/style.css">
     <link rel="icon" type="image/png" href="https://www.bbk.schule/typo3conf/ext/mj_bk/Resources/Public/Icons/favicon.ico">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <script src="theme.js"></script>
+    <script src="assets/shared.js"></script>
+    <script src="assets/home.js"></script>
+    <script>startLessonCountdown();</script>
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('Service Worker registered'))
+                .catch(error => console.log('Service Worker registration failed:', error));
+        }
+    </script>
 </head>
 <body>
 <header>
@@ -29,16 +38,6 @@
             <button class="link-btn">Countdown Seite</button>
         </a>
         <div id="next-lesson-end" style="margin-top:2em; font-size:1.3em;"></div>
-        <script src="bbk.js"></script>
-        <script>startLessonCountdown();</script>
-        <script>
-            // Register Service Worker
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => console.log('Service Worker registered'))
-                    .catch(error => console.log('Service Worker registration failed:', error));
-            }
-        </script>
     </div>
     <div class="card">
         <h2>Prüfungen</h2>

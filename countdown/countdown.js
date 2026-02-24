@@ -1,7 +1,4 @@
-/* exported resetView, renderButtons */
-// Globaler Stub, damit inline onclick="resetView()" im HTML keine "not defined"-Fehler zeigt.
 window.resetView = function() {
-    // defensives Verhalten falls Script noch nicht vollständig geladen ist
     try {
         const auswahl = document.getElementById && document.getElementById('auswahl');
         if (auswahl) auswahl.style.display = "";
@@ -13,31 +10,53 @@ window.resetView = function() {
     }
 };
 
-document.addEventListener("DOMContentLoaded", function() {
-    // Schulende-Datum: 29. Mai 2026, 00:00:00
-    const schoolEndDate = new Date(2026, 4, 11, 0, 0, 0, 0); // Monat 4 = Mai (0-basiert)
+document.addEventListener("DOMContentLoaded", async function() {
+    let schoolEndDate = new Date(2026, 4, 11, 0, 0, 0, 0); // Fallback-Datum
+    let schoolEndTitle = "Das Ende von Leiden";
+
+    try {
+        const response = await fetch('../assets/data.json');
+        const data = await response.json();
+        if (data.dates && data.dates.length > 0) {
+            const firstDate = data.dates[0];
+            schoolEndTitle = firstDate.title;
+            schoolEndDate = new Date(firstDate.date);
+
+            const titleElement = document.querySelector('.schoolend-title');
+            if (titleElement) {
+                const formattedDate = schoolEndDate.toLocaleDateString('de-DE', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                titleElement.textContent = `${schoolEndTitle} (${formattedDate}):`;
+            }
+        }
+    } catch (error) {
+        console.error('Fehler beim Laden der Daten:', error);
+        const titleElement = document.querySelector('.schoolend-title');
+        if (titleElement) {
+            titleElement.textContent = `${schoolEndTitle} (11. Mai 2026):`;
+        }
+    }
 
     function updateSchoolEndCountdown() {
         const now = new Date();
         let y1 = now.getFullYear(), m1 = now.getMonth(), d1 = now.getDate();
         let y2 = schoolEndDate.getFullYear(), m2 = schoolEndDate.getMonth(), d2 = schoolEndDate.getDate();
 
-        // Korrigiere Zielzeit auf 00:00 des Zieltags
         let target = new Date(schoolEndDate.getTime());
 
-        // Wenn schon vorbei:
         if (now >= target) {
             document.getElementById('schoolend-countdown').textContent = "Schule ist vorbei! 🎉";
             return;
         }
 
-        // Monate und Tage berechnen
         let years = y2 - y1;
         let months = m2 - m1;
         let days = d2 - d1;
 
         if (days < 0) {
-            // Einen Monat zurück, Tage addieren
             months -= 1;
             let prevMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
             days += prevMonth;
@@ -47,13 +66,11 @@ document.addEventListener("DOMContentLoaded", function() {
             months += 12;
         }
 
-        // Gesamtsekunden bis zum Ziel
         const totalSec = Math.floor((target - now) / 1000);
         const s = totalSec % 60;
         const m = Math.floor(totalSec / 60) % 60;
         const h = Math.floor(totalSec / 3600) % 24;
 
-        // Anzeige
         let out = "";
         if (years > 0) out += `${years} Jahr${years > 1 ? "e" : ""}, `;
         if (months > 0 || years > 0) out += `${months} Monat${months !== 1 ? "e" : ""}, `;
@@ -82,14 +99,11 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Exportiere renderButtons und eine echte resetView-Implementierung global,
-    // damit das Inline-onclick und externe Aufrufer funktionieren.
     window.renderButtons = renderButtons;
     window.resetView = function() {
         document.getElementById('auswahl').style.display = "";
         document.getElementById('countdown-view').style.display = "none";
         if (window.countdownInterval) clearInterval(window.countdownInterval);
-        // leere die Zielanzeige
         const t = document.getElementById('stunde-target'); if (t) t.textContent = '';
         if (typeof renderButtons === 'function') renderButtons();
     }
@@ -100,26 +114,18 @@ document.addEventListener("DOMContentLoaded", function() {
     let activeCountdownNode = document.getElementById('countdown');
     let pipWindowRef = null;
     let pipWindowCountdownNode = null;
-    // mutable target date for currently selected lesson
     let currentTargetDate = null;
     let currentLessonIndex = null;
 
-    function parseTime(str) {
-        const [h, m] = str.split(":").map(Number);
-        return {h, m};
-    }
-
     function getTargetTime(idx) {
         const today = new Date();
-        const {h, m} = parseTime(stunden[idx][1]); // Endzeit
+        const [h, m] = stunden[idx][1].split(":").map(Number);
         let target = new Date(today.getFullYear(), today.getMonth(), today.getDate(), h, m, 0, 0);
-        // Falls die Stunde schon vorbei ist, nimm den nächsten Tag
         if (target < today) target.setDate(target.getDate() + 1);
         return target;
     }
 
     function startCountdown(idx) {
-        // stoppe evtl. vorherigen Countdown
         if (countdownInterval) {
             clearInterval(countdownInterval);
             countdownInterval = null;
@@ -127,19 +133,14 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         document.getElementById('auswahl').style.display = "none";
         document.getElementById('countdown-view').style.display = "";
-        // Überschrift zeigt nur die Stunde/Fach
         document.getElementById('stunde-label').textContent = `${idx+1}. Stunde: ${stunden[idx][0]} – ${stunden[idx][1]}`;
-        // Ziel-Uhrzeit separat anzeigen
         const targetEl = document.getElementById('stunde-target');
         if (targetEl) targetEl.textContent = '';
-        // create a mutable target date so shift buttons can modify it
         currentTargetDate = getTargetTime(idx);
         currentLessonIndex = idx;
-        // initiale Anzeige der Zielzeit
         updateTargetDisplay();
         updateCountdown();
         countdownInterval = setInterval(() => updateCountdown(), 1000);
-        // keep the global reference in sync so resetView() can clear it
         window.countdownInterval = countdownInterval;
     }
 
@@ -152,11 +153,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function updateCountdown() {
-         if (!currentTargetDate) return;
-         const now = new Date();
-         let diffSec = Math.floor((currentTargetDate - now) / 1000);
+        if (!currentTargetDate) return;
+        const now = new Date();
+        let diffSec = Math.floor((currentTargetDate - now) / 1000);
 
-        // If target is already passed, show "Die Stunde ist vorbei!" and stop interval
         if (diffSec <= 0) {
             const finishedText = "Die Stunde ist vorbei!";
             if (activeCountdownNode) activeCountdownNode.textContent = finishedText;
@@ -165,8 +165,7 @@ document.addEventListener("DOMContentLoaded", function() {
             } else if (pipWindowCountdownNode) {
                 try { pipWindowCountdownNode.textContent = finishedText; } catch (e) {}
             }
-            // keep running but show elapsed time as negative (how long since finished)
-            // compute elapsed seconds
+
             let elapsed = Math.floor((now - currentTargetDate) / 1000);
             const h = Math.floor(elapsed / 3600);
             elapsed %= 3600;
@@ -196,25 +195,20 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // shift target by minutes (positive or negative)
     function shiftTargetBy(minutes) {
         if (!currentTargetDate) return;
         currentTargetDate = new Date(currentTargetDate.getTime() + minutes * 60 * 1000);
-        // update label to reflect changed target (optional)
         updateTargetDisplay();
         updateCountdown();
     }
 
-    // hook shift buttons
     const shiftBackBtn = document.getElementById('shift-back');
     const shiftFwdBtn = document.getElementById('shift-forward');
     if (shiftBackBtn) shiftBackBtn.addEventListener('click', () => shiftTargetBy(-15));
     if (shiftFwdBtn) shiftFwdBtn.addEventListener('click', () => shiftTargetBy(15));
 
-    // Initiales Rendern der Buttons mit Markierung
     renderButtons();
 
-    // --- Picture-in-Picture (Document Picture-in-Picture API) Button-Handler ---
     const pipBtn = document.getElementById('pip-btn');
     if (pipBtn) {
         const isPipSupported = typeof documentPictureInPicture !== 'undefined' && typeof documentPictureInPicture.requestWindow === 'function';
@@ -233,28 +227,23 @@ document.addEventListener("DOMContentLoaded", function() {
 
             try {
                 pipBtn.disabled = true;
-                // Öffne ein neues PiP-Fenster
                 const pipWindow = await documentPictureInPicture.requestWindow({ width: 320, height: 140 });
 
-                // Kopiere notwendige Styles in das PiP-Dokument, damit das Aussehen erhalten bleibt
                 const styles = document.querySelectorAll('link[rel="stylesheet"], style');
                 styles.forEach(style => {
                     try {
                         pipWindow.document.head.appendChild(style.cloneNode(true));
                     } catch (e) {
-                        // Ignoriere wenn ein Style nicht kopiert werden kann
                         console.warn('Style konnte nicht kopiert werden:', e);
                     }
                 });
 
-                // Etwas Basis-Layout für das PiP-Fenster
                 pipWindow.document.body.style.margin = '0';
                 pipWindow.document.body.style.display = 'flex';
                 pipWindow.document.body.style.alignItems = 'center';
                 pipWindow.document.body.style.justifyContent = 'center';
                 pipWindow.document.body.style.background = 'white';
 
-                // PiP-spezifische CSS: kleinere Schrift und schwarzer Text
                 const pipStyle = pipWindow.document.createElement('style');
                 pipStyle.textContent = `
                   
@@ -293,11 +282,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 try {
                     const pipClone = countdownDiv.cloneNode(true);
-                    // give it a unique id inside the PiP document
                     pipClone.id = 'countdown-pip';
                     pipWindow.document.body.appendChild(pipClone);
 
-                    // create a small script in the PiP window that exposes a setter function
                     try {
                         const pipScript = pipWindow.document.createElement('script');
                         pipScript.type = 'text/javascript';
@@ -313,7 +300,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     console.warn('Konnte Countdown-Kopie im PiP-Fenster nicht erstellen:', e);
                 }
 
-                // Wenn das PiP-Fenster geschlossen wird: nur Referenzen aufräumen und Button aktivieren
                 const restore = () => {
                     try {
                         if (pipWindowRef) {
@@ -326,23 +312,21 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                         pipWindowCountdownNode = null;
                         pipWindowRef = null;
-                     } catch (e) {
-                         console.error('Fehler beim Rückverschieben des Countdowns:', e);
+                    } catch (e) {
+                        console.error('Fehler beim Rückverschieben des Countdowns:', e);
                         pipWindowCountdownNode = null;
                         pipWindowRef = null;
-                     }
-                     pipBtn.disabled = false;
-                 };
+                    }
+                    pipBtn.disabled = false;
+                };
 
-                 pipWindow.addEventListener('unload', restore);
+                pipWindow.addEventListener('unload', restore);
 
-             } catch (err) {
-                 pipBtn.disabled = false;
-                 alert('Fehler beim Öffnen des PiP-Fensters: ' + (err && err.message ? err.message : err));
-             }
-         }
-
-         pipBtn.addEventListener('click', openCountdownInPiP);
-     }
-
+            } catch (err) {
+                pipBtn.disabled = false;
+                alert('Fehler beim Öffnen des PiP-Fensters: ' + (err && err.message ? err.message : err));
+            }
+        }
+        pipBtn.addEventListener('click', openCountdownInPiP);
+    }
 })
