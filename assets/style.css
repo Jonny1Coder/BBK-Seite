@@ -1,6 +1,4 @@
-/* CSS Variables for Theme Colors */
 :root {
-    /* Light Theme (Default) */
     --bg-primary: #f9f9f9;
     --bg-card: #ffffff;
     --bg-button: #fff;
@@ -35,7 +33,6 @@
     --shadow-primary: rgba(0, 0, 0, 0.5);
     --shadow-current-lesson: #66ffad;
 
-    /* Gauss-Jordan specific colors */
     --color-success: #4CAF50;
     --color-success-hover: #45a049;
     --color-warning: #ff9800;
@@ -54,7 +51,6 @@
     --bg-highlight: rgba(255, 235, 59, 0.5);
 }
 
-/* Dark Theme */
 [data-theme="dark"] {
     --bg-primary: #1a1a1a;
     --bg-card: #2a2a2a;
@@ -90,7 +86,6 @@
     --shadow-primary: rgba(0, 0, 0, 0.8);
     --shadow-current-lesson: #2d6645;
 
-    /* Gauss-Jordan specific colors for dark mode */
     --color-success: #66bb6a;
     --color-success-hover: #5cb85c;
     --color-warning: #ffa726;
@@ -163,7 +158,6 @@ button:hover {
     color: var(--text-countdown);
 }
 
-/* Neues Element für die Ziel-Uhrzeit der Stunde */
 .stunde-target, #stunde-target {
     margin-top: 6px;
     font-size: 1.25rem;
@@ -207,7 +201,7 @@ button.current-lesson {
     font-family: "Consolas", "Fira Mono", monospace;
     letter-spacing: 1.5px;
 }
-/* Top Navigation Container */
+
 .top-nav {
     position: fixed;
     top: 15px;
@@ -220,7 +214,6 @@ button.current-lesson {
     gap: 10px;
 }
 
-/* Base styles for navigation buttons */
 .nav-btn {
     padding: 10px 15px;
     font-size: 1.1rem;
@@ -235,12 +228,6 @@ button.current-lesson {
     background: var(--bg-button-hover);
 }
 
-/* Home button specific styles */
-.home-btn {
-    /* Inherits from .nav-btn */
-}
-
-/* Theme Toggle Button specific styles */
 .theme-toggle-btn {
     padding: 10px;
     width: 50px;
@@ -265,7 +252,6 @@ button.current-lesson {
     line-height: 1;
 }
 
-/* Utility classes */
 .text-bold {
     font-weight: bold;
 }
@@ -274,8 +260,6 @@ button.current-lesson {
     background-color: var(--bg-button-link);
 }
 
-
-/* Prüfungs-Karten Styles (für /pruefungen/) */
 #exams-list{
     margin-left: 15em;
     margin-right: 15em;
@@ -390,7 +374,7 @@ button.current-lesson {
     }
     h1 {
         font-size: 1.5em;
-        margin-top: 60px; /* Push heading below fixed buttons */
+        margin-top: 60px;
     }
     h2 {
         font-size: 1.1em;
@@ -407,7 +391,7 @@ button.current-lesson {
     .countdown {
         font-size: 2em;
     }
-    /* mobile: Zielzeit größer sichtbarer machen */
+
     .stunde-target, #stunde-target {
         font-size: 1.6rem;
     }
@@ -421,7 +405,6 @@ button.current-lesson {
         box-sizing: border-box;
     }
 
-    /* Mobile navigation styles */
     .top-nav {
         top: 10px;
         left: 10px;
@@ -438,17 +421,16 @@ button.current-lesson {
         display: flex;
         align-items: center;
         justify-content: center;
-        flex: 1; /* Both buttons take equal space */
+        flex: 1;
     }
 
-    /* Override theme button circular shape in mobile */
     .theme-toggle-btn {
-        width: auto; /* Allow flex to control width */
+        width: auto;
         min-width: auto;
-        min-height: auto; /* Reset min-height for mobile */
-        border-radius: 2em; /* Match home button */
+        min-height: auto;
+        border-radius: 2em;
         aspect-ratio: auto;
-        flex: 1; /* Same flex as home button */
+        flex: 1;
     }
 
     .theme-toggle-btn .material-icons {
