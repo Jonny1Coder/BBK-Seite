@@ -260,10 +260,6 @@ button.current-lesson {
     background-color: var(--bg-button-link);
 }
 
-#exams-list{
-    margin-left: 15em;
-    margin-right: 15em;
-}
 .exam-card {
     padding: 12px 16px;
     border: 1px solid var(--border-card);
