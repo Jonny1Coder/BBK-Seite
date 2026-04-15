@@ -1,15 +1,15 @@
 {
   "exams": [
     { "fach": "Bekanntgabe der Vornote & Letzter Schultag", "termin": "2026-05-11T14:40:00" },
-    { "fach": "DB", "termin": "2026-05-18T07:55:00", "nachschreibtermin": "2026-06-15T07:55:00" },
-    { "fach": "SOW", "termin": "2026-05-21T07:55:00", "nachschreibtermin": "2026-06-17T07:55:00" },
+    { "fach": "Datenbanken (DB)", "termin": "2026-05-18T07:55:00", "nachschreibtermin": "2026-06-15T07:55:00" },
+    { "fach": "Software (SOW)", "termin": "2026-05-21T07:55:00", "nachschreibtermin": "2026-06-17T07:55:00" },
     { "fach": "Englisch", "termin": "2026-05-27T07:55:00", "nachschreibtermin": "2026-06-11T07:55:00" },
     { "fach": "Deutsch", "termin": "2026-05-29T07:55:00", "nachschreibtermin": "2026-06-12T07:55:00" },
-    { "fach": "BEN", "termin": "2026-06-01T07:55:00", "nachschreibtermin": "2026-06-17T07:55:00" },
-    { "fach": "Mathe", "termin": "2026-06-03T07:55:00", "nachschreibtermin": "2026-06-16T07:55:00" },
+    { "fach": "Betriebssysteme/Netzwerke (BEN)", "termin": "2026-06-01T07:55:00", "nachschreibtermin": "2026-06-17T07:55:00" },
+    { "fach": "Mathematik", "termin": "2026-06-03T07:55:00", "nachschreibtermin": "2026-06-16T07:55:00" },
     { "fach": "Praktische Prüfung", "termin": "2026-06-10T07:55:00", "nachschreibtermin": "2026-06-17T07:55:00" },
-    { "fach": "Zeugnis Notenbekanntgabe", "termin": "2026-06-23T18:00:00"},
+    { "fach": "Bekanntgabe der vorläufigen Endnote", "termin": "2026-06-23T07:55:00"},
     { "fach": "evtl. Mündliche Nachprüfungen", "termin": "2026-06-30T18:00:00"},
-    { "fach": "Abschluss Feier", "termin": "2026-07-09T18:00:00"}
+    { "fach": "Zeugnisausgabe (Abschlussfeier)", "termin": "2026-07-09T16:00:00"}
   ]
 }
