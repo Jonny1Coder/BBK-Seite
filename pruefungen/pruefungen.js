@@ -18,7 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
         title.className = 'exam-title';
 
         const mainLabel = document.createElement('div');
-        mainLabel.textContent = `Termin: ${formatDateISO(exam.termin)}`;
+        let weekdayText = '';
+        if (exam.termin) {
+            const d = new Date(exam.termin);
+            if (!isNaN(d)) {
+                weekdayText = d.toLocaleDateString('de-DE', { weekday: 'long' });
+                weekdayText = weekdayText.charAt(0).toUpperCase() + weekdayText.slice(1);
+            }
+        }
+        mainLabel.textContent = weekdayText ? `${weekdayText}: ${formatDateISO(exam.termin)}` : formatDateISO(exam.termin);
         mainLabel.className = 'exam-main-label';
 
         const mainCountdown = document.createElement('div');
@@ -26,6 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
         mainCountdown.textContent = 'Lädt...';
         mainCountdown.dataset.iso = exam.termin || '';
         mainCountdown.dataset.type = 'termin';
+
+        if (exam.termin) {
+            const mainDate = new Date(exam.termin);
+            if (!isNaN(mainDate)) {
+                const now = new Date();
+                if (now >= mainDate) {
+                    container.classList.add('exam-main-completed');
+                }
+            }
+        }
 
         const nachLabel = document.createElement('div');
         nachLabel.className = 'exam-nach-label';
@@ -75,6 +93,42 @@ document.addEventListener('DOMContentLoaded', () => {
             elem.textContent = '';
             return;
         }
+
+        const card = elem.closest('.exam-card');
+        if (card) {
+            const mainElem = card.querySelector('[data-type="termin"]');
+            const nachElem = card.querySelector('[data-type="nach"]');
+            const mainIso = mainElem ? (mainElem.dataset.iso || '') : '';
+            const nachIso = nachElem ? (nachElem.dataset.iso || '') : '';
+
+            const mainDate = mainIso ? new Date(mainIso) : null;
+            const nachDate = nachIso ? new Date(nachIso) : null;
+            const mainPast = mainDate && !isNaN(mainDate) && now >= mainDate;
+            const nachPast = nachDate && !isNaN(nachDate) && now >= nachDate;
+
+            const nachExists = !!nachIso;
+
+            if (mainPast && (nachExists ? nachPast : true)) {
+                if (card.classList.contains('exam-main-completed')) card.classList.remove('exam-main-completed');
+                if (!card.classList.contains('exam-expired')) {
+                    card.classList.add('exam-expired');
+                    card.dataset.fullyExpired = 'true';
+                }
+            } else if (mainPast && (!nachExists || !nachPast)) {
+                if (!card.classList.contains('exam-main-completed')) card.classList.add('exam-main-completed');
+                if (card.classList.contains('exam-expired')) {
+                    card.classList.remove('exam-expired');
+                    delete card.dataset.fullyExpired;
+                }
+            } else {
+                if (card.classList.contains('exam-main-completed')) card.classList.remove('exam-main-completed');
+                if (card.classList.contains('exam-expired')) {
+                    card.classList.remove('exam-expired');
+                    delete card.dataset.fullyExpired;
+                }
+            }
+        }
+
         if (now >= target) {
             let diff = Math.floor((now - target) / 1000);
             const days = Math.floor(diff / (3600 * 24));
@@ -136,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fullyExpired.forEach((exam) => {
             const {container, mainCountdown, nachCountdown} = createExamCard(exam);
-            // optische Hervorhebung: ausgegraut (CSS-Klasse statt Inline-Styles)
+            if (container.classList.contains('exam-main-completed')) container.classList.remove('exam-main-completed');
             container.classList.add('exam-expired');
             container.dataset.fullyExpired = 'true';
 
