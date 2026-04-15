@@ -315,6 +315,11 @@ button.current-lesson {
     filter: grayscale(40%);
     background: var(--bg-exam-expired);
 }
+
+.exam-main-completed {
+    background-color: var(--bg-success);
+}
+
 .danger-alert{
     background-color: var(--bg-danger-alert);
     border-style: solid;
