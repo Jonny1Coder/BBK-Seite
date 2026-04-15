@@ -18,7 +18,17 @@ document.addEventListener('DOMContentLoaded', () => {
         title.className = 'exam-title';
 
         const mainLabel = document.createElement('div');
-        mainLabel.textContent = `Termin: ${formatDateISO(exam.termin)}`;
+        // Statt "Termin: Datum" den Wochentag (deutsch) vor dem formatierten Datum anzeigen.
+        let weekdayText = '';
+        if (exam.termin) {
+            const d = new Date(exam.termin);
+            if (!isNaN(d)) {
+                weekdayText = d.toLocaleDateString('de-DE', { weekday: 'long' });
+                // Ersten Buchstaben groß schreiben (für bessere Darstellung)
+                weekdayText = weekdayText.charAt(0).toUpperCase() + weekdayText.slice(1);
+            }
+        }
+        mainLabel.textContent = weekdayText ? `${weekdayText}: ${formatDateISO(exam.termin)}` : formatDateISO(exam.termin);
         mainLabel.className = 'exam-main-label';
 
         const mainCountdown = document.createElement('div');
