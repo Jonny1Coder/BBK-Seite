@@ -11,73 +11,94 @@ window.resetView = function() {
 };
 
 document.addEventListener("DOMContentLoaded", async function() {
-    let schoolEndDate = new Date(2026, 4, 11, 0, 0, 0, 0); // Fallback-Datum
     let schoolEndTitle = "Das Ende von Leiden";
+    let schoolEndDate = new Date('2026-05-11T14:40:00');
+
+    function updateSchoolEndTitle() {
+        const titleElement = document.querySelector('.schoolend-title');
+        if (!titleElement) return;
+
+        const formattedDate = schoolEndDate.toLocaleDateString('de-DE', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        titleElement.textContent = `${schoolEndTitle} (${formattedDate}):`;
+    }
 
     try {
         const response = await fetch('../assets/data.json');
         const data = await response.json();
         if (data.dates && data.dates.length > 0) {
             const firstDate = data.dates[0];
-            schoolEndTitle = firstDate.title;
-            schoolEndDate = new Date(firstDate.date);
-
-            const titleElement = document.querySelector('.schoolend-title');
-            if (titleElement) {
-                const formattedDate = schoolEndDate.toLocaleDateString('de-DE', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric'
-                });
-                titleElement.textContent = `${schoolEndTitle} (${formattedDate}):`;
+            if (firstDate && typeof firstDate.title === 'string' && firstDate.title.trim()) {
+                schoolEndTitle = firstDate.title;
+            }
+            const parsedDate = new Date(firstDate && firstDate.date);
+            if (!Number.isNaN(parsedDate.getTime())) {
+                schoolEndDate = parsedDate;
             }
         }
     } catch (error) {
         console.error('Fehler beim Laden der Daten:', error);
-        const titleElement = document.querySelector('.schoolend-title');
-        if (titleElement) {
-            titleElement.textContent = `${schoolEndTitle} (11. Mai 2026):`;
-        }
     }
+
+    updateSchoolEndTitle();
 
     function updateSchoolEndCountdown() {
         const now = new Date();
-        let y1 = now.getFullYear(), m1 = now.getMonth(), d1 = now.getDate();
-        let y2 = schoolEndDate.getFullYear(), m2 = schoolEndDate.getMonth(), d2 = schoolEndDate.getDate();
 
-        let target = new Date(schoolEndDate.getTime());
-
-        if (now >= target) {
-            document.getElementById('schoolend-countdown').textContent = "Schule ist vorbei! 🎉";
+        if (now >= schoolEndDate) {
+            const node = document.getElementById('schoolend-countdown');
+            if (node) node.textContent = "Schule ist vorbei! 🎉";
             return;
         }
 
-        let years = y2 - y1;
-        let months = m2 - m1;
-        let days = d2 - d1;
+        const out = formatDateDiff(schoolEndDate, now, 'de-DE');
+        const node = document.getElementById('schoolend-countdown');
+        if (node) node.textContent = out;
+    }
 
-        if (days < 0) {
+    function formatDateDiff(targetDate, fromDate, locale = 'de-DE') {
+        if (!(targetDate instanceof Date) || Number.isNaN(targetDate.getTime())) return '';
+        if (!(fromDate instanceof Date) || Number.isNaN(fromDate.getTime())) return '';
+
+        if (targetDate <= fromDate) {
+            return locale === 'de-DE' ? '0 Monate, 0 Tage, 00:00:00' : '0 months, 0 days, 00:00:00';
+        }
+
+        const cursor = new Date(fromDate.getTime());
+        let months = (targetDate.getFullYear() - cursor.getFullYear()) * 12 + (targetDate.getMonth() - cursor.getMonth());
+
+        const monthAnchor = new Date(cursor.getTime());
+        monthAnchor.setMonth(monthAnchor.getMonth() + months);
+        if (monthAnchor > targetDate) {
             months -= 1;
-            let prevMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
-            days += prevMonth;
-        }
-        if (months < 0) {
-            years -= 1;
-            months += 12;
+            monthAnchor.setMonth(monthAnchor.getMonth() - 1);
         }
 
-        const totalSec = Math.floor((target - now) / 1000);
-        const s = totalSec % 60;
-        const m = Math.floor(totalSec / 60) % 60;
-        const h = Math.floor(totalSec / 3600) % 24;
+        let days = 0;
+        while (true) {
+            const nextDay = new Date(monthAnchor.getTime());
+            nextDay.setDate(nextDay.getDate() + 1);
+            if (nextDay <= targetDate) {
+                days += 1;
+                monthAnchor.setTime(nextDay.getTime());
+            } else {
+                break;
+            }
+        }
 
-        let out = "";
-        if (years > 0) out += `${years} Jahr${years > 1 ? "e" : ""}, `;
-        if (months > 0 || years > 0) out += `${months} Monat${months !== 1 ? "e" : ""}, `;
-        out += `${days} Tag${days !== 1 ? "e" : ""}, `;
-        out += `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        let remainingSec = Math.floor((targetDate.getTime() - monthAnchor.getTime()) / 1000);
+        const hours = Math.floor(remainingSec / 3600);
+        remainingSec %= 3600;
+        const minutes = Math.floor(remainingSec / 60);
+        const seconds = remainingSec % 60;
 
-        document.getElementById('schoolend-countdown').textContent = out;
+        const monthWord = locale === 'de-DE' ? (months === 1 ? 'Monat' : 'Monate') : (months === 1 ? 'month' : 'months');
+        const dayWord = locale === 'de-DE' ? (days === 1 ? 'Tag' : 'Tage') : (days === 1 ? 'day' : 'days');
+
+        return `${months} ${monthWord}, ${days} ${dayWord}, ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
     setInterval(updateSchoolEndCountdown, 1000);
